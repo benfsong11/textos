@@ -1,54 +1,77 @@
-# C++ objects and libs
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.so.*
-*.dll
-*.dylib
+# ================================
+# Build results
+# ================================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
 
-# Qt-es
-object_script.*.Release
-object_script.*.Debug
-*_plugin_import.cpp
-/.qmake.cache
-/.qmake.stash
-*.pro.user
-*.pro.user.*
-*.qbs.user
-*.qbs.user.*
-*.moc
-moc_*.cpp
-moc_*.h
-qrc_*.cpp
-ui_*.h
-*.qmlc
-*.jsc
-Makefile*
-*build-*
-*.qm
-*.prl
+# ================================
+# Visual Studio files
+# ================================
+.vs/
+*.user
+*.userosscache
+*.suo
+*.cache
+*.ide
+*.dbmdl
 
-# Qt unit tests
-target_wrapper.*
+# ================================
+# Rider / JetBrains
+# ================================
+.idea/
+*.sln.iml
 
-# QtCreator
-*.autosave
+# ================================
+# Visual Studio Code
+# ================================
+.vscode/
 
-# QtCreator Qml
-*.qmlproject.user
-*.qmlproject.user.*
+# ================================
+# .NET / NuGet
+# ================================
+*.nupkg
+*.snupkg
+.nuget/
+packages/
 
-# QtCreator CMake
-CMakeLists.txt.user*
+# ================================
+# Test results
+# ================================
+[Tt]est[Rr]esult*/
+*.trx
 
-# QtCreator 4.8< compilation database
-compile_commands.json
+# ================================
+# Publish output
+# ================================
+publish/
 
-# QtCreator local machine specific files for imported projects
-*creator.user*
+# ================================
+# OS / System files
+# ================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
 
-*_qmlcache.qrc
+# ================================
+# Crash dumps
+# ================================
+*.dmp
+
+# ================================
+# Temporary files
+# ================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# ================================
+# Coverage
+# ================================
+coverage/
+*.coverage
+*.coveragexml
