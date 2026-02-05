@@ -33,7 +33,9 @@ namespace Textos.Resources
         public const string BlueLabel = "파랑:";
 
         // File Dialog
-        public const string TextFilesFilter = "텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*";
+        public const string AllFilesFilter = "모든 파일 (*.*)|*.*|텍스트 파일 (*.txt)|*.txt|마크다운 파일 (*.md)|*.md";
+        public const string TextFilesFilter = "텍스트 파일 (*.txt)|*.txt|마크다운 파일 (*.md)|*.md|모든 파일 (*.*)|*.*";
+        public const string MarkdownFilesFilter = "마크다운 파일 (*.md)|*.md|텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*";
 
         // Messages
         public const string SaveErrorMessage = "파일 저장 오류: {0}";

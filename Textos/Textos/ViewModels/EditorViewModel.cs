@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Textos.Models;
+using Textos.Services;
 
 namespace Textos.ViewModels
 {
@@ -13,9 +14,10 @@ namespace Textos.ViewModels
         private string _textContent = "";
         private string? _currentFilePath;
         private FormattingSettings _formatting;
+        private FormattingSettings _markdownFormatting;
         private bool _hasUnsavedChanges = false;
         private bool _isDarkMode = true;
-        private bool _isPageViewMode = false;
+        private bool _isMarkdownMode = false;
         private int _currentPage = 1;
         private int _totalPages = 1;
 
@@ -34,13 +36,50 @@ namespace Textos.ViewModels
         public string? CurrentFilePath
         {
             get => _currentFilePath;
-            set => SetProperty(ref _currentFilePath, value);
+            set
+            {
+                if (SetProperty(ref _currentFilePath, value))
+                {
+                    OnPropertyChanged(nameof(CurrentFileName));
+                    OnPropertyChanged(nameof(CurrentFilePathTooltip));
+                    UpdateFileMode();
+                }
+            }
+        }
+
+        public string CurrentFileName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_currentFilePath))
+                    return "New Document";
+                return Path.GetFileName(_currentFilePath);
+            }
+        }
+
+        public string? CurrentFilePathTooltip
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_currentFilePath))
+                    return null;
+                return _currentFilePath;
+            }
         }
 
         public FormattingSettings Formatting
         {
             get => _formatting;
             set => SetProperty(ref _formatting, value);
+        }
+
+        /// <summary>
+        /// Fixed formatting for Markdown mode: Segoe UI, 12pt, 1.5 line height
+        /// </summary>
+        public FormattingSettings MarkdownFormatting
+        {
+            get => _markdownFormatting;
+            set => SetProperty(ref _markdownFormatting, value);
         }
 
         public bool HasUnsavedChanges
@@ -61,18 +100,25 @@ namespace Textos.ViewModels
             }
         }
 
-        public bool IsPageViewMode
+        /// <summary>
+        /// True if current file is markdown (.md), false for text (.txt)
+        /// </summary>
+        public bool IsMarkdownMode
         {
-            get => _isPageViewMode;
-            set
+            get => _isMarkdownMode;
+            private set
             {
-                if (SetProperty(ref _isPageViewMode, value))
+                if (SetProperty(ref _isMarkdownMode, value))
                 {
-                    // Force TextContent update when switching modes
-                    OnPropertyChanged(nameof(TextContent));
+                    OnPropertyChanged(nameof(IsTextMode));
                 }
             }
         }
+
+        /// <summary>
+        /// True if current file is plain text (.txt)
+        /// </summary>
+        public bool IsTextMode => !_isMarkdownMode;
 
         public int CurrentPage
         {
@@ -89,27 +135,79 @@ namespace Textos.ViewModels
         public IAsyncRelayCommand SaveCommand { get; }
         public IAsyncRelayCommand OpenCommand { get; }
         public IAsyncRelayCommand NewCommand { get; }
+        public IAsyncRelayCommand NewMarkdownCommand { get; }
         public RelayCommand ResetFormattingCommand { get; }
         public RelayCommand ToggleThemeCommand { get; }
-        public RelayCommand TogglePageViewCommand { get; }
 
         public EditorViewModel()
         {
             _formatting = new FormattingSettings();
+            _markdownFormatting = new FormattingSettings
+            {
+                FontFamily = "Segoe UI",
+                FontSize = 12,
+                LineHeight = 1.5
+            };
             
             SaveCommand = new AsyncRelayCommand(SaveFileAsync);
             OpenCommand = new AsyncRelayCommand(OpenFileAsync);
-            NewCommand = new AsyncRelayCommand(NewFileAsync);
+            NewCommand = new AsyncRelayCommand(NewTextFileAsync);
+            NewMarkdownCommand = new AsyncRelayCommand(NewMarkdownFileAsync);
             ResetFormattingCommand = new RelayCommand(ResetFormatting);
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
-            TogglePageViewCommand = new RelayCommand(TogglePageView);
             
-            ApplyTheme();
+            LoadSettings();
         }
 
-        private void TogglePageView()
+        private async void LoadSettings()
         {
-            IsPageViewMode = !IsPageViewMode;
+            var settings = AppSettings.Load();
+            _isDarkMode = settings.IsDarkMode;
+            ApplyTheme();
+            
+            // Restore last opened file
+            if (!string.IsNullOrEmpty(settings.LastOpenedFilePath) && File.Exists(settings.LastOpenedFilePath))
+            {
+                try
+                {
+                    string fileContent = await File.ReadAllTextAsync(settings.LastOpenedFilePath);
+                    _textContent = fileContent;
+                    _currentFilePath = settings.LastOpenedFilePath;
+                    
+                    OnPropertyChanged(nameof(TextContent));
+                    OnPropertyChanged(nameof(CurrentFilePath));
+                    OnPropertyChanged(nameof(CurrentFileName));
+                    OnPropertyChanged(nameof(CurrentFilePathTooltip));
+                    UpdateFileMode();
+                    HasUnsavedChanges = false;
+                }
+                catch
+                {
+                    // Ignore errors when restoring file
+                }
+            }
+        }
+
+        public void SaveSettings()
+        {
+            var settings = new AppSettings
+            {
+                LastOpenedFilePath = CurrentFilePath,
+                IsDarkMode = IsDarkMode
+            };
+            settings.Save();
+        }
+
+        private void UpdateFileMode()
+        {
+            if (string.IsNullOrEmpty(_currentFilePath))
+            {
+                // Keep current mode for new files
+                return;
+            }
+            
+            var extension = Path.GetExtension(_currentFilePath)?.ToLowerInvariant();
+            IsMarkdownMode = extension == ".md";
         }
 
         private void ToggleTheme()
@@ -144,10 +242,15 @@ namespace Textos.ViewModels
             {
                 if (string.IsNullOrEmpty(CurrentFilePath))
                 {
+                    var defaultExt = IsMarkdownMode ? ".md" : ".txt";
+                    var filter = IsMarkdownMode 
+                        ? Resources.UIStrings.MarkdownFilesFilter 
+                        : Resources.UIStrings.TextFilesFilter;
+                    
                     var dialog = new Microsoft.Win32.SaveFileDialog
                     {
-                        Filter = Resources.UIStrings.TextFilesFilter,
-                        DefaultExt = ".txt"
+                        Filter = filter,
+                        DefaultExt = defaultExt
                     };
 
                     if (dialog.ShowDialog() != true)
@@ -187,8 +290,7 @@ namespace Textos.ViewModels
 
                 var dialog = new Microsoft.Win32.OpenFileDialog
                 {
-                    Filter = Resources.UIStrings.TextFilesFilter,
-                    DefaultExt = ".txt"
+                    Filter = Resources.UIStrings.AllFilesFilter
                 };
 
                 if (dialog.ShowDialog() != true)
@@ -207,7 +309,7 @@ namespace Textos.ViewModels
             }
         }
 
-        private async Task NewFileAsync()
+        private async Task NewTextFileAsync()
         {
             try
             {
@@ -226,6 +328,37 @@ namespace Textos.ViewModels
 
                 TextContent = "";
                 CurrentFilePath = null;
+                IsMarkdownMode = false;
+                HasUnsavedChanges = false;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    string.Format(Resources.UIStrings.NewFileErrorMessage, ex.Message), 
+                    "¿À·ù");
+            }
+        }
+
+        private async Task NewMarkdownFileAsync()
+        {
+            try
+            {
+                if (HasUnsavedChanges)
+                {
+                    var result = System.Windows.MessageBox.Show(
+                        Resources.UIStrings.UnsavedChangesMessage,
+                        Resources.UIStrings.UnsavedChangesTitle,
+                        System.Windows.MessageBoxButton.YesNoCancel);
+
+                    if (result == System.Windows.MessageBoxResult.Yes)
+                        await SaveFileAsync();
+                    else if (result == System.Windows.MessageBoxResult.Cancel)
+                        return;
+                }
+
+                TextContent = "";
+                CurrentFilePath = null;
+                IsMarkdownMode = true;
                 HasUnsavedChanges = false;
             }
             catch (Exception ex)

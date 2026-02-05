@@ -7,29 +7,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Generic.xaml"/>
                 <ResourceDictionary Source="Themes/DarkTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
             <converters:BoolToVisConverter x:Key="BoolToVisConverter" />
-            
-            <!-- PagedDocumentViewer Style -->
-            <Style TargetType="{x:Type controls:PagedDocumentViewer}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type controls:PagedDocumentViewer}">
-                            <ScrollViewer x:Name="PART_ScrollViewer" 
-                                          HorizontalScrollBarVisibility="Disabled"
-                                          VerticalScrollBarVisibility="Auto"
-                                          Background="Transparent">
-                                <StackPanel x:Name="PART_PagesPanel" 
-                                            HorizontalAlignment="Center"
-                                            Margin="0,24,0,24"/>
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

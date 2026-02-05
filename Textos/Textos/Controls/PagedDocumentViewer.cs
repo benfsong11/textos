@@ -78,7 +78,19 @@ namespace Textos.Controls
                 _scrollViewer.ScrollChanged += OnScrollChanged;
             }
 
+            // Update pages when visibility changes (handles theme changes)
+            IsVisibleChanged += OnVisibilityChanged;
+
             UpdatePages();
+        }
+
+        private void OnVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is true)
+            {
+                // Refresh pages when becoming visible to pick up theme changes
+                UpdatePages();
+            }
         }
 
         private static void OnTextContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -130,10 +142,10 @@ namespace Textos.Controls
                 var formatting = Formatting ?? new FormattingSettings();
                 var text = TextContent ?? "";
 
-                // Get theme colors
-                var textBrush = TryFindResource("TextPrimaryBrush") as SolidColorBrush 
+                // Get theme colors from Application resources (always get fresh values)
+                var textBrush = Application.Current?.TryFindResource("TextPrimaryBrush") as SolidColorBrush 
                     ?? new SolidColorBrush(Colors.Black);
-                var pageBgBrush = TryFindResource("EditorBgBrush") as SolidColorBrush 
+                var pageBgBrush = Application.Current?.TryFindResource("EditorBgBrush") as SolidColorBrush 
                     ?? new SolidColorBrush(Colors.White);
 
                 // Calculate content area per page
