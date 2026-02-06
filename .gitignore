@@ -1,77 +1,33 @@
-# ================================
-# Build results
-# ================================
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
+# Dependencies
+node_modules/
 
-# ================================
-# Visual Studio files
-# ================================
-.vs/
-*.user
-*.userosscache
-*.suo
-*.cache
-*.ide
-*.dbmdl
+# Build output
+dist/
+out/
 
-# ================================
-# Rider / JetBrains
-# ================================
-.idea/
-*.sln.iml
+# electron-vite
+*.js.map
+*.d.ts.map
 
-# ================================
-# Visual Studio Code
-# ================================
+# IDE
 .vscode/
-
-# ================================
-# .NET / NuGet
-# ================================
-*.nupkg
-*.snupkg
-.nuget/
-packages/
-
-# ================================
-# Test results
-# ================================
-[Tt]est[Rr]esult*/
-*.trx
-
-# ================================
-# Publish output
-# ================================
-publish/
-
-# ================================
-# OS / System files
-# ================================
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-.DS_Store
-
-# ================================
-# Crash dumps
-# ================================
-*.dmp
-
-# ================================
-# Temporary files
-# ================================
-*.tmp
-*.temp
-*.bak
+.idea/
 *.swp
 *~
 
-# ================================
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env
+.env.local
+
 # Coverage
-# ================================
 coverage/
-*.coverage
-*.coveragexml
+
+# Temp
+*.tmp
+*.temp
+*.bak
