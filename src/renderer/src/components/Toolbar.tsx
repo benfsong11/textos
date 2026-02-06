@@ -1,17 +1,19 @@
+import type { ViewMode } from '../../../shared/types'
+
 interface ToolbarProps {
   filePath: string | null
-  isPreview: boolean
+  viewMode: ViewMode
   onOpen: () => void
   onSave: () => void
-  onTogglePreview: () => void
+  onSetViewMode: (mode: ViewMode) => void
 }
 
 export default function Toolbar({
   filePath,
-  isPreview,
+  viewMode,
   onOpen,
   onSave,
-  onTogglePreview
+  onSetViewMode
 }: ToolbarProps): React.JSX.Element {
   const fileName = filePath ? filePath.split(/[/\\]/).pop() ?? 'Untitled' : 'Untitled'
 
@@ -19,8 +21,17 @@ export default function Toolbar({
     <div className="toolbar">
       <button onClick={onOpen}>Open</button>
       <button onClick={onSave}>Save</button>
-      <button className={isPreview ? 'active' : ''} onClick={onTogglePreview}>
-        {isPreview ? 'Edit' : 'Preview'}
+      <button
+        className={viewMode === 'preview' ? 'active' : ''}
+        onClick={() => onSetViewMode(viewMode === 'preview' ? 'edit' : 'preview')}
+      >
+        Preview
+      </button>
+      <button
+        className={viewMode === 'pageview' ? 'active' : ''}
+        onClick={() => onSetViewMode(viewMode === 'pageview' ? 'edit' : 'pageview')}
+      >
+        Page
       </button>
       <span className="title">{fileName}</span>
     </div>

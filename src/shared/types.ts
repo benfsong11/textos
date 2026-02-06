@@ -1,3 +1,5 @@
+export type ViewMode = 'edit' | 'preview' | 'pageview'
+
 export interface FileData {
   content: string
   filePath: string | null

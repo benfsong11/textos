@@ -10,6 +10,7 @@ function createWindow(): void {
     minHeight: 400,
     show: false,
     title: 'Textos',
+    icon: join(app.getAppPath(), 'resources', 'app.ico'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,

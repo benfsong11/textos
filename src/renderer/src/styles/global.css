@@ -171,3 +171,62 @@ body {
   border-top: 1px solid var(--border-color);
   margin: 1em 0;
 }
+
+/* Page View */
+.pageview-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px 0;
+}
+
+.pageview-page {
+  position: relative;
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #000000;
+  padding: 20mm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageview-content {
+  font-family: var(--font-mono);
+  font-size: 11pt;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+.pageview-editable {
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.pageview-page-number {
+  position: absolute;
+  bottom: 10mm;
+  right: 20mm;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: #888888;
+}
