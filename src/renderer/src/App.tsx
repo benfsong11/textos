@@ -111,31 +111,31 @@ export default function App(): React.JSX.Element {
     { label: '취소', variant: 'secondary', onClick: handleCancelModal }
   ]
 
+  const handleCloseSettings = useCallback(() => {
+    setCurrentPage('editor')
+  }, [setCurrentPage])
+
   return (
     <div className="app">
-      {currentPage === 'settings' ? (
-        <SettingsPage />
-      ) : (
-        <>
-          <Toolbar
-            filePath={filePath}
-            viewMode={viewMode}
-            isDirty={isDirty}
-            onNewFile={handleNewFile}
-            onOpen={handleOpenFile}
-            onSave={saveFile}
-            onSaveAs={saveFileAs}
-            onSetViewMode={setViewMode}
-            onOpenSettings={handleOpenSettings}
-          />
-          <div className="editor-container">
-            {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
-            {viewMode === 'preview' && <Preview content={content} />}
-            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
-          </div>
-          <StatusBar content={content} />
-        </>
-      )}
+      <Toolbar
+        filePath={filePath}
+        viewMode={viewMode}
+        isDirty={isDirty}
+        onNewFile={handleNewFile}
+        onOpen={handleOpenFile}
+        onSave={saveFile}
+        onSaveAs={saveFileAs}
+        onSetViewMode={setViewMode}
+        onOpenSettings={handleOpenSettings}
+      />
+      <div className="editor-container">
+        {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
+        {viewMode === 'preview' && <Preview content={content} />}
+        {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
+      </div>
+      <StatusBar content={content} />
+
+      {currentPage === 'settings' && <SettingsPage onClose={handleCloseSettings} />}
 
       {pendingAction && (
         <Modal

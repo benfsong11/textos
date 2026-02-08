@@ -25,8 +25,13 @@ export default function StatusBar({ content }: StatusBarProps): React.JSX.Elemen
 
   return (
     <div className="status-bar">
-      <span className="status-bar-item">줌: {zoomPercent}%</span>
-      <span className="status-bar-item">글자 수: {charCount}자</span>
+      <div className="status-bar-left">
+        <span className="status-bar-item">줌: {zoomPercent}%</span>
+      </div>
+      <div className="status-bar-center">
+        <span className="status-bar-item">글자 수: {charCount}자</span>
+      </div>
+      <div className="status-bar-right" />
     </div>
   )
 }

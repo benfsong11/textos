@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ViewMode } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import SegmentedControl from './SegmentedControl'
@@ -35,12 +35,25 @@ export default function Toolbar({
   onOpenSettings
 }: ToolbarProps): React.JSX.Element {
   const { resolvedTheme, settings, updateSettings } = useAppContext()
-  const fileName = filePath ? filePath.split(/[/\\]/).pop() ?? 'Untitled' : 'Untitled'
+  const fileName = filePath ? filePath.split(/[/\\]/).pop() ?? '빈 문서' : '빈 문서'
   const [fonts, setFonts] = useState<string[]>([])
+  const [fileMenuOpen, setFileMenuOpen] = useState(false)
+  const fileMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     window.api.getSystemFonts().then(setFonts)
   }, [])
+
+  useEffect(() => {
+    if (!fileMenuOpen) return
+    const handleClick = (e: MouseEvent): void => {
+      if (fileMenuRef.current && !fileMenuRef.current.contains(e.target as Node)) {
+        setFileMenuOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [fileMenuOpen])
 
   const toggleTheme = (): void => {
     const next = resolvedTheme === 'dark' ? 'light' : 'dark'
@@ -49,11 +62,16 @@ export default function Toolbar({
 
   return (
     <div className="toolbar">
-      <div className="toolbar-group">
-        <button onClick={onNewFile}>새 파일</button>
-        <button onClick={onOpen}>열기</button>
-        <button onClick={onSave}>저장</button>
-        <button onClick={onSaveAs}>다른 이름으로 저장</button>
+      <div className="toolbar-dropdown" ref={fileMenuRef}>
+        <button onClick={() => setFileMenuOpen((v) => !v)}>파일</button>
+        {fileMenuOpen && (
+          <div className="toolbar-dropdown-menu">
+            <button className="toolbar-dropdown-item" onClick={() => { onNewFile(); setFileMenuOpen(false) }}>새로 만들기</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onOpen(); setFileMenuOpen(false) }}>열기</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onSave(); setFileMenuOpen(false) }}>저장</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onSaveAs(); setFileMenuOpen(false) }}>다른 이름으로 저장</button>
+          </div>
+        )}
       </div>
 
       <div className="toolbar-group">
