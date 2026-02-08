@@ -35,7 +35,8 @@ export default function Toolbar({
   onOpenSettings
 }: ToolbarProps): React.JSX.Element {
   const { resolvedTheme, settings, updateSettings } = useAppContext()
-  const fileName = filePath ? filePath.split(/[/\\]/).pop() ?? '빈 문서' : '빈 문서'
+  const rawName = filePath ? filePath.split(/[/\\]/).pop() ?? null : null
+  const displayName = rawName ? rawName.replace(/\.[^.]+$/, '') : '빈 문서'
   const [fonts, setFonts] = useState<string[]>([])
   const [fileMenuOpen, setFileMenuOpen] = useState(false)
   const fileMenuRef = useRef<HTMLDivElement>(null)
@@ -86,15 +87,22 @@ export default function Toolbar({
             </option>
           ))}
         </select>
-        <input
-          type="number"
-          min={8}
-          max={72}
-          step={1}
+        <select
+          className="toolbar-fontsize-select"
           value={settings.fontSize}
           onChange={(e) => updateSettings({ fontSize: Number(e.target.value) })}
           title="글꼴 크기"
-        />
+        >
+          {(() => {
+            const presets = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 36, 48, 72]
+            const sizes = presets.includes(settings.fontSize)
+              ? presets
+              : [...presets, settings.fontSize].sort((a, b) => a - b)
+            return sizes.map((s) => (
+              <option key={s} value={s}>{s}pt</option>
+            ))
+          })()}
+        </select>
       </div>
 
       <div className="toolbar-group">
@@ -120,10 +128,12 @@ export default function Toolbar({
 
       <div className="toolbar-spacer" />
 
-      <span className="toolbar-title">
-        {fileName}
+      <span className="toolbar-title" {...(filePath ? { title: filePath } : {})}>
+        {displayName}
         {isDirty && <span className="toolbar-dirty">&nbsp;●</span>}
       </span>
+
+      <div className="toolbar-spacer" />
 
       <div className="toolbar-group">
         <button className="toolbar-icon-btn" onClick={toggleTheme} title={resolvedTheme === 'dark' ? '라이트 모드' : '다크 모드'}>

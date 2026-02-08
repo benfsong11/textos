@@ -217,6 +217,10 @@ body {
   width: 60px;
 }
 
+.toolbar-fontsize-select {
+  width: 72px;
+}
+
 /* ===== Settings Select / Input ===== */
 
 .settings-select,

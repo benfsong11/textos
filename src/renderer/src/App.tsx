@@ -81,6 +81,20 @@ export default function App(): React.JSX.Element {
     setPendingAction(null)
   }, [])
 
+  // Ctrl + mouse wheel zoom
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent): void => {
+      if (!e.ctrlKey) return
+      e.preventDefault()
+      const current = window.api.getZoomFactor()
+      const delta = e.deltaY > 0 ? -0.1 : 0.1
+      const next = Math.min(3.0, Math.max(0.5, current + delta))
+      window.api.setZoomFactor(next)
+    }
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [])
+
   // Listen for before-close from main process
   useEffect(() => {
     const cleanup = window.api.onBeforeClose(() => {

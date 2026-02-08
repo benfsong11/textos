@@ -7,6 +7,7 @@ const api: ElectronAPI = {
   saveFileAs: (content) => ipcRenderer.invoke('file:save-as', content),
   getSystemFonts: () => ipcRenderer.invoke('font:list'),
   getZoomFactor: () => webFrame.getZoomFactor(),
+  setZoomFactor: (f) => webFrame.setZoomFactor(f),
   confirmClose: () => ipcRenderer.send('app:close-confirmed'),
   onBeforeClose: (callback) => {
     const handler = (): void => callback()

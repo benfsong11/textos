@@ -35,4 +35,5 @@ export interface ElectronAPI {
   onMenuAction: (callback: (action: string) => void) => () => void
   getSystemFonts: () => Promise<string[]>
   getZoomFactor: () => number
+  setZoomFactor: (factor: number) => void
 }

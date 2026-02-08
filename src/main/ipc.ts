@@ -11,7 +11,7 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
 
     try {
       const output = execSync(
-        'powershell -NoProfile -Command "Add-Type -AssemblyName System.Drawing; (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name"',
+        'powershell -NoProfile -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Add-Type -AssemblyName System.Drawing; (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name"',
         { encoding: 'utf-8', timeout: 10000 }
       )
       cachedFonts = output
