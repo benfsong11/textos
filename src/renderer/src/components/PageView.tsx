@@ -4,9 +4,11 @@ import { usePageBreaks } from '../hooks/usePageBreaks'
 interface PageViewProps {
   content: string
   onChange?: (content: string) => void
+  fontFamily: string
+  fontSize: number
 }
 
-export default function PageView({ content, onChange }: PageViewProps): React.JSX.Element {
+export default function PageView({ content, onChange, fontFamily, fontSize }: PageViewProps): React.JSX.Element {
   const pages = usePageBreaks(content)
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   const cursorRef = useRef<{ absolutePos: number; pageIndex: number } | null>(null)
@@ -169,6 +171,7 @@ export default function PageView({ content, onChange }: PageViewProps): React.JS
             onChange={(e) => handleChange(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
             spellCheck={false}
+            style={{ fontFamily, fontSize: `${fontSize}pt` }}
           />
           <span className="pageview-page-number">{i + 1}</span>
         </div>

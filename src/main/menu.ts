@@ -9,21 +9,21 @@ function send(action: string): void {
 export function buildMenu(): Menu {
   const template: MenuItemConstructorOptions[] = [
     {
-      label: 'File',
+      label: '파일',
       submenu: [
-        { label: 'New', accelerator: 'CmdOrCtrl+N', click: () => send('new-file') },
-        { label: 'Open', accelerator: 'CmdOrCtrl+O', click: () => send('open-file') },
+        { label: '새 파일', accelerator: 'CmdOrCtrl+N', click: () => send('new-file') },
+        { label: '열기', accelerator: 'CmdOrCtrl+O', click: () => send('open-file') },
         { type: 'separator' },
-        { label: 'Save', accelerator: 'CmdOrCtrl+S', click: () => send('save-file') },
-        { label: 'Save As...', accelerator: 'CmdOrCtrl+Shift+S', click: () => send('save-file-as') },
+        { label: '저장', accelerator: 'CmdOrCtrl+S', click: () => send('save-file') },
+        { label: '다른 이름으로 저장...', accelerator: 'CmdOrCtrl+Shift+S', click: () => send('save-file-as') },
         { type: 'separator' },
-        { label: 'Settings', accelerator: 'CmdOrCtrl+,', click: () => send('open-settings') },
+        { label: '설정', accelerator: 'CmdOrCtrl+,', click: () => send('open-settings') },
         { type: 'separator' },
         { role: 'close' }
       ]
     },
     {
-      label: 'Edit',
+      label: '편집',
       submenu: [
         { role: 'undo' },
         { role: 'redo' },
@@ -35,11 +35,11 @@ export function buildMenu(): Menu {
       ]
     },
     {
-      label: 'View',
+      label: '보기',
       submenu: [
-        { label: 'Edit Mode', accelerator: 'CmdOrCtrl+1', click: () => send('view-edit') },
-        { label: 'Preview', accelerator: 'CmdOrCtrl+2', click: () => send('view-preview') },
-        { label: 'Page View', accelerator: 'CmdOrCtrl+3', click: () => send('view-pageview') },
+        { label: '편집 모드', accelerator: 'CmdOrCtrl+1', click: () => send('view-edit') },
+        { label: '미리보기', accelerator: 'CmdOrCtrl+2', click: () => send('view-preview') },
+        { label: '페이지 뷰', accelerator: 'CmdOrCtrl+3', click: () => send('view-pageview') },
         { type: 'separator' },
         { role: 'toggleDevTools' },
         { role: 'resetZoom' },

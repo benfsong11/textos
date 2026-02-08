@@ -13,7 +13,9 @@ const STORAGE_KEY = 'textos-settings'
 
 const defaultSettings: AppSettings = {
   theme: 'system',
-  defaultView: 'pageview'
+  defaultView: 'pageview',
+  fontFamily: 'Consolas',
+  fontSize: 14
 }
 
 function loadSettings(): AppSettings {

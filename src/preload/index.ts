@@ -5,6 +5,7 @@ const api: ElectronAPI = {
   openFile: () => ipcRenderer.invoke('file:open'),
   saveFile: (content, filePath) => ipcRenderer.invoke('file:save', content, filePath),
   saveFileAs: (content) => ipcRenderer.invoke('file:save-as', content),
+  getSystemFonts: () => ipcRenderer.invoke('font:list'),
   confirmClose: () => ipcRenderer.send('app:close-confirmed'),
   onBeforeClose: (callback) => {
     const handler = (): void => callback()

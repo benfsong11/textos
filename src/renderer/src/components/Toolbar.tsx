@@ -1,12 +1,13 @@
+import { useState, useEffect } from 'react'
 import type { ViewMode } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import SegmentedControl from './SegmentedControl'
 import { SunIcon, MoonIcon, GearIcon } from './icons'
 
 const viewOptions = [
-  { value: 'edit' as const, label: 'Edit' },
-  { value: 'preview' as const, label: 'Preview' },
-  { value: 'pageview' as const, label: 'Page' }
+  { value: 'edit' as const, label: '편집' },
+  { value: 'preview' as const, label: '미리보기' },
+  { value: 'pageview' as const, label: '페이지' }
 ]
 
 interface ToolbarProps {
@@ -32,8 +33,13 @@ export default function Toolbar({
   onSetViewMode,
   onOpenSettings
 }: ToolbarProps): React.JSX.Element {
-  const { resolvedTheme, updateSettings } = useAppContext()
+  const { resolvedTheme, settings, updateSettings } = useAppContext()
   const fileName = filePath ? filePath.split(/[/\\]/).pop() ?? 'Untitled' : 'Untitled'
+  const [fonts, setFonts] = useState<string[]>([])
+
+  useEffect(() => {
+    window.api.getSystemFonts().then(setFonts)
+  }, [])
 
   const toggleTheme = (): void => {
     const next = resolvedTheme === 'dark' ? 'light' : 'dark'
@@ -43,10 +49,33 @@ export default function Toolbar({
   return (
     <div className="toolbar">
       <div className="toolbar-group">
-        <button onClick={onNewFile}>New</button>
-        <button onClick={onOpen}>Open</button>
-        <button onClick={onSave}>Save</button>
-        <button onClick={onSaveAs}>Save As</button>
+        <button onClick={onNewFile}>새 파일</button>
+        <button onClick={onOpen}>열기</button>
+        <button onClick={onSave}>저장</button>
+        <button onClick={onSaveAs}>다른 이름으로 저장</button>
+      </div>
+
+      <div className="toolbar-group">
+        <select
+          value={settings.fontFamily}
+          onChange={(e) => updateSettings({ fontFamily: e.target.value })}
+          title="글꼴"
+        >
+          {fonts.map((f) => (
+            <option key={f} value={f} style={{ fontFamily: f }}>
+              {f}
+            </option>
+          ))}
+        </select>
+        <input
+          type="number"
+          min={8}
+          max={72}
+          step={1}
+          value={settings.fontSize}
+          onChange={(e) => updateSettings({ fontSize: Number(e.target.value) })}
+          title="글꼴 크기"
+        />
       </div>
 
       <SegmentedControl<ViewMode>
@@ -63,10 +92,10 @@ export default function Toolbar({
       </span>
 
       <div className="toolbar-group">
-        <button className="toolbar-icon-btn" onClick={toggleTheme} title={resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}>
+        <button className="toolbar-icon-btn" onClick={toggleTheme} title={resolvedTheme === 'dark' ? '라이트 모드' : '다크 모드'}>
           {resolvedTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
-        <button className="toolbar-icon-btn" onClick={onOpenSettings} title="Settings">
+        <button className="toolbar-icon-btn" onClick={onOpenSettings} title="설정">
           <GearIcon />
         </button>
       </div>

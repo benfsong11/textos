@@ -9,9 +9,9 @@
   --text-secondary: #6b7684;
   --text-tertiary: #8b95a1;
   --border-color: #e5e8eb;
-  --accent: #3182f6;
-  --accent-hover: #1b64da;
-  --accent-light: rgba(49, 130, 246, 0.08);
+  --accent: #6C5CE7;
+  --accent-hover: #5A4BD1;
+  --accent-light: rgba(108, 92, 231, 0.08);
   --danger: #f04452;
   --danger-hover: #d92130;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -21,6 +21,8 @@
   --font-mono: 'Consolas', 'Courier New', monospace;
   --font-sans: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --pageview-bg: #e8e8e8;
+  --page-bg: #ffffff;
+  --page-text: #000000;
 }
 
 [data-theme='dark'] {
@@ -32,9 +34,9 @@
   --text-secondary: #8b8fa3;
   --text-tertiary: #6b6e82;
   --border-color: #2e2e38;
-  --accent: #4e94f8;
-  --accent-hover: #6da8ff;
-  --accent-light: rgba(78, 148, 248, 0.1);
+  --accent: #8B7CF6;
+  --accent-hover: #A294FF;
+  --accent-light: rgba(139, 124, 246, 0.1);
   --danger: #f04452;
   --danger-hover: #ff6370;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -44,6 +46,8 @@
   --font-mono: 'Consolas', 'Courier New', monospace;
   --font-sans: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --pageview-bg: #111115;
+  --page-bg: #2b2b2b;
+  --page-text: #d4d4d4;
 }
 
 /* ===== Reset ===== */
@@ -181,6 +185,65 @@ body {
 .toolbar-icon-btn svg {
   width: 18px;
   height: 18px;
+}
+
+/* ===== Toolbar Select / Input ===== */
+
+.toolbar select,
+.toolbar input[type='number'] {
+  -webkit-app-region: no-drag;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.toolbar select:focus,
+.toolbar input[type='number']:focus {
+  border-color: var(--accent);
+}
+
+.toolbar select {
+  max-width: 160px;
+  cursor: pointer;
+}
+
+.toolbar input[type='number'] {
+  width: 60px;
+}
+
+/* ===== Settings Select / Input ===== */
+
+.settings-select,
+.settings-number-input {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.settings-select:focus,
+.settings-number-input:focus {
+  border-color: var(--accent);
+}
+
+.settings-select {
+  max-width: 200px;
+  cursor: pointer;
+}
+
+.settings-number-input {
+  width: 70px;
 }
 
 /* ===== Segmented Control ===== */
@@ -346,8 +409,8 @@ body {
   position: relative;
   width: 210mm;
   min-height: 297mm;
-  background: #ffffff;
-  color: #000000;
+  background: var(--page-bg);
+  color: var(--page-text);
   padding: 20mm;
   box-shadow: var(--shadow-lg);
   border-radius: 2px;
@@ -386,7 +449,7 @@ body {
   right: 20mm;
   font-family: var(--font-sans);
   font-size: 10px;
-  color: #888888;
+  color: var(--text-tertiary);
 }
 
 /* ===== Settings Page ===== */

@@ -105,9 +105,9 @@ export default function App(): React.JSX.Element {
   })
 
   const modalActions: ModalAction[] = [
-    { label: 'Save', variant: 'primary', onClick: handleSaveAndContinue },
-    { label: "Don't Save", variant: 'danger', onClick: handleDiscardAndContinue },
-    { label: 'Cancel', variant: 'secondary', onClick: handleCancelModal }
+    { label: '저장', variant: 'primary', onClick: handleSaveAndContinue },
+    { label: '저장 안 함', variant: 'danger', onClick: handleDiscardAndContinue },
+    { label: '취소', variant: 'secondary', onClick: handleCancelModal }
   ]
 
   return (
@@ -128,17 +128,17 @@ export default function App(): React.JSX.Element {
             onOpenSettings={handleOpenSettings}
           />
           <div className="editor-container">
-            {viewMode === 'edit' && <Editor content={content} onChange={setContent} />}
+            {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} />}
             {viewMode === 'preview' && <Preview content={content} />}
-            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} />}
+            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} />}
           </div>
         </>
       )}
 
       {pendingAction && (
         <Modal
-          title="Unsaved Changes"
-          message="You have unsaved changes. Would you like to save them before continuing?"
+          title="저장되지 않은 변경 사항"
+          message="저장되지 않은 변경 사항이 있습니다. 계속하기 전에 저장하시겠습니까?"
           actions={modalActions}
           onClose={handleCancelModal}
         />

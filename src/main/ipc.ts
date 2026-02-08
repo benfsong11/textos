@@ -1,8 +1,30 @@
 import { ipcMain, dialog, BrowserWindow } from 'electron'
 import { readFile, writeFile } from 'fs/promises'
+import { execSync } from 'child_process'
 import type { FileData } from '../shared/types'
 
+let cachedFonts: string[] | null = null
+
 export function registerIpcHandlers(onCloseConfirmed: () => void): void {
+  ipcMain.handle('font:list', async (): Promise<string[]> => {
+    if (cachedFonts) return cachedFonts
+
+    try {
+      const output = execSync(
+        'powershell -NoProfile -Command "Add-Type -AssemblyName System.Drawing; (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name"',
+        { encoding: 'utf-8', timeout: 10000 }
+      )
+      cachedFonts = output
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0)
+        .sort()
+    } catch {
+      cachedFonts = ['Arial', 'Consolas', 'Courier New', 'Georgia', 'Times New Roman', 'Verdana']
+    }
+
+    return cachedFonts
+  })
   ipcMain.handle('file:open', async (): Promise<FileData | null> => {
     const win = BrowserWindow.getFocusedWindow()
     if (!win) return null

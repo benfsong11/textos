@@ -9,6 +9,8 @@ export type AppPage = 'editor' | 'settings'
 export interface AppSettings {
   theme: Theme
   defaultView: DefaultView
+  fontFamily: string
+  fontSize: number
 }
 
 export interface FileData {
@@ -23,4 +25,5 @@ export interface ElectronAPI {
   confirmClose: () => void
   onBeforeClose: (callback: () => void) => () => void
   onMenuAction: (callback: (action: string) => void) => () => void
+  getSystemFonts: () => Promise<string[]>
 }
