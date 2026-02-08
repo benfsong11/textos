@@ -1,15 +1,20 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, Menu, shell } from 'electron'
 import { join } from 'path'
 import { registerIpcHandlers } from './ipc'
+import { buildMenu } from './menu'
+
+let mainWindow: BrowserWindow | null = null
+let forceClose = false
 
 function createWindow(): void {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
     minWidth: 600,
     minHeight: 400,
     show: false,
     title: 'Textos',
+    autoHideMenuBar: true,
     icon: join(app.getAppPath(), 'resources', 'app.ico'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -20,7 +25,14 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow!.show()
+  })
+
+  mainWindow.on('close', (e) => {
+    if (!forceClose) {
+      e.preventDefault()
+      mainWindow!.webContents.send('before-close')
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -36,7 +48,12 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
-  registerIpcHandlers()
+  registerIpcHandlers(() => {
+    forceClose = true
+    mainWindow?.close()
+  })
+
+  Menu.setApplicationMenu(buildMenu())
   createWindow()
 
   app.on('activate', () => {

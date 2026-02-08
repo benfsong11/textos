@@ -2,7 +2,7 @@ import { ipcMain, dialog, BrowserWindow } from 'electron'
 import { readFile, writeFile } from 'fs/promises'
 import type { FileData } from '../shared/types'
 
-export function registerIpcHandlers(): void {
+export function registerIpcHandlers(onCloseConfirmed: () => void): void {
   ipcMain.handle('file:open', async (): Promise<FileData | null> => {
     const win = BrowserWindow.getFocusedWindow()
     if (!win) return null
@@ -46,4 +46,28 @@ export function registerIpcHandlers(): void {
       return result.filePath
     }
   )
+
+  ipcMain.handle(
+    'file:save-as',
+    async (_event, content: string): Promise<string | null> => {
+      const win = BrowserWindow.getFocusedWindow()
+      if (!win) return null
+
+      const result = await dialog.showSaveDialog(win, {
+        filters: [
+          { name: 'Text Files', extensions: ['txt', 'md', 'markdown'] },
+          { name: 'All Files', extensions: ['*'] }
+        ]
+      })
+
+      if (result.canceled || !result.filePath) return null
+
+      await writeFile(result.filePath, content, 'utf-8')
+      return result.filePath
+    }
+  )
+
+  ipcMain.on('app:close-confirmed', () => {
+    onCloseConfirmed()
+  })
 }
