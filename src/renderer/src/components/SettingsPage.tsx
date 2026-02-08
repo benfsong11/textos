@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { Theme, DefaultView } from '../../../shared/types'
+import type { Theme, DefaultView, CharCountRule } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import SegmentedControl from './SegmentedControl'
 import { ArrowLeftIcon } from './icons'
@@ -13,6 +13,11 @@ const themeOptions = [
 const viewOptions = [
   { value: 'edit' as const, label: '편집 모드' },
   { value: 'pageview' as const, label: '페이지 뷰' }
+]
+
+const charCountOptions = [
+  { value: 'with-spaces' as const, label: '공백 포함' },
+  { value: 'without-spaces' as const, label: '공백 미포함' }
 ]
 
 export default function SettingsPage(): React.JSX.Element {
@@ -93,6 +98,53 @@ export default function SettingsPage(): React.JSX.Element {
               step={1}
               value={settings.fontSize}
               onChange={(e) => updateSettings({ fontSize: Number(e.target.value) })}
+            />
+          </div>
+          <div className="settings-row">
+            <div>
+              <div className="settings-row-label">글자 수 표시</div>
+              <div className="settings-row-description">상태 바에 표시할 글자 수 계산 방식</div>
+            </div>
+            <SegmentedControl<CharCountRule>
+              options={charCountOptions}
+              value={settings.charCountRule}
+              onChange={(charCountRule) => updateSettings({ charCountRule })}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-title">페이지 뷰</div>
+        <div className="settings-card">
+          <div className="settings-row">
+            <div>
+              <div className="settings-row-label">자간</div>
+              <div className="settings-row-description">글자 사이 간격 (px)</div>
+            </div>
+            <input
+              className="settings-number-input"
+              type="number"
+              min={-2}
+              max={10}
+              step={0.5}
+              value={settings.letterSpacing}
+              onChange={(e) => updateSettings({ letterSpacing: Number(e.target.value) })}
+            />
+          </div>
+          <div className="settings-row">
+            <div>
+              <div className="settings-row-label">줄 간격</div>
+              <div className="settings-row-description">줄 사이 간격 (배)</div>
+            </div>
+            <input
+              className="settings-number-input"
+              type="number"
+              min={1.0}
+              max={3.0}
+              step={0.1}
+              value={settings.lineHeight}
+              onChange={(e) => updateSettings({ lineHeight: Number(e.target.value) })}
             />
           </div>
         </div>

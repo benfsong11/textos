@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import type { ViewMode } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import SegmentedControl from './SegmentedControl'
-import { SunIcon, MoonIcon, GearIcon } from './icons'
+import type { TextAlign } from '../../../shared/types'
+import { SunIcon, MoonIcon, GearIcon, AlignLeftIcon, AlignCenterIcon, AlignRightIcon } from './icons'
 
 const viewOptions = [
   { value: 'edit' as const, label: '편집' },
@@ -76,6 +77,21 @@ export default function Toolbar({
           onChange={(e) => updateSettings({ fontSize: Number(e.target.value) })}
           title="글꼴 크기"
         />
+      </div>
+
+      <div className="toolbar-group">
+        {(['left', 'center', 'right'] as TextAlign[]).map((align) => (
+          <button
+            key={align}
+            className={`toolbar-icon-btn${settings.textAlign === align ? ' active' : ''}`}
+            onClick={() => updateSettings({ textAlign: align })}
+            title={align === 'left' ? '왼쪽 정렬' : align === 'center' ? '가운데 정렬' : '오른쪽 정렬'}
+          >
+            {align === 'left' && <AlignLeftIcon />}
+            {align === 'center' && <AlignCenterIcon />}
+            {align === 'right' && <AlignRightIcon />}
+          </button>
+        ))}
       </div>
 
       <SegmentedControl<ViewMode>

@@ -15,7 +15,11 @@ const defaultSettings: AppSettings = {
   theme: 'system',
   defaultView: 'pageview',
   fontFamily: 'Consolas',
-  fontSize: 14
+  fontSize: 14,
+  charCountRule: 'with-spaces',
+  textAlign: 'left',
+  letterSpacing: 0,
+  lineHeight: 1.6
 }
 
 function loadSettings(): AppSettings {

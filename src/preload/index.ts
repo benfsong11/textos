@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webFrame } from 'electron'
 import type { ElectronAPI } from '../shared/types'
 
 const api: ElectronAPI = {
@@ -6,6 +6,7 @@ const api: ElectronAPI = {
   saveFile: (content, filePath) => ipcRenderer.invoke('file:save', content, filePath),
   saveFileAs: (content) => ipcRenderer.invoke('file:save-as', content),
   getSystemFonts: () => ipcRenderer.invoke('font:list'),
+  getZoomFactor: () => webFrame.getZoomFactor(),
   confirmClose: () => ipcRenderer.send('app:close-confirmed'),
   onBeforeClose: (callback) => {
     const handler = (): void => callback()

@@ -7,6 +7,7 @@ import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
 import PageView from './components/PageView'
+import StatusBar from './components/StatusBar'
 import SettingsPage from './components/SettingsPage'
 import Modal from './components/Modal'
 import type { ModalAction } from './components/Modal'
@@ -128,10 +129,11 @@ export default function App(): React.JSX.Element {
             onOpenSettings={handleOpenSettings}
           />
           <div className="editor-container">
-            {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} />}
+            {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
             {viewMode === 'preview' && <Preview content={content} />}
-            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} />}
+            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
           </div>
+          <StatusBar content={content} />
         </>
       )}
 

@@ -3,9 +3,10 @@ interface EditorProps {
   onChange: (content: string) => void
   fontFamily: string
   fontSize: number
+  textAlign: 'left' | 'center' | 'right'
 }
 
-export default function Editor({ content, onChange, fontFamily, fontSize }: EditorProps): React.JSX.Element {
+export default function Editor({ content, onChange, fontFamily, fontSize, textAlign }: EditorProps): React.JSX.Element {
   return (
     <textarea
       className="editor"
@@ -13,7 +14,7 @@ export default function Editor({ content, onChange, fontFamily, fontSize }: Edit
       onChange={(e) => onChange(e.target.value)}
       placeholder="여기에 입력하세요..."
       spellCheck={false}
-      style={{ fontFamily, fontSize: `${fontSize}px` }}
+      style={{ fontFamily, fontSize: `${fontSize}px`, textAlign }}
     />
   )
 }

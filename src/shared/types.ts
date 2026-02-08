@@ -6,11 +6,19 @@ export type DefaultView = 'edit' | 'pageview'
 
 export type AppPage = 'editor' | 'settings'
 
+export type CharCountRule = 'with-spaces' | 'without-spaces'
+
+export type TextAlign = 'left' | 'center' | 'right'
+
 export interface AppSettings {
   theme: Theme
   defaultView: DefaultView
   fontFamily: string
   fontSize: number
+  charCountRule: CharCountRule
+  textAlign: TextAlign
+  letterSpacing: number
+  lineHeight: number
 }
 
 export interface FileData {
@@ -26,4 +34,5 @@ export interface ElectronAPI {
   onBeforeClose: (callback: () => void) => () => void
   onMenuAction: (callback: (action: string) => void) => () => void
   getSystemFonts: () => Promise<string[]>
+  getZoomFactor: () => number
 }

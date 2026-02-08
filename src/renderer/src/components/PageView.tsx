@@ -6,9 +6,12 @@ interface PageViewProps {
   onChange?: (content: string) => void
   fontFamily: string
   fontSize: number
+  textAlign: 'left' | 'center' | 'right'
+  letterSpacing: number
+  lineHeight: number
 }
 
-export default function PageView({ content, onChange, fontFamily, fontSize }: PageViewProps): React.JSX.Element {
+export default function PageView({ content, onChange, fontFamily, fontSize, textAlign, letterSpacing, lineHeight }: PageViewProps): React.JSX.Element {
   const pages = usePageBreaks(content)
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   const cursorRef = useRef<{ absolutePos: number; pageIndex: number } | null>(null)
@@ -171,7 +174,7 @@ export default function PageView({ content, onChange, fontFamily, fontSize }: Pa
             onChange={(e) => handleChange(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
             spellCheck={false}
-            style={{ fontFamily, fontSize: `${fontSize}pt` }}
+            style={{ fontFamily, fontSize: `${fontSize}pt`, textAlign, letterSpacing: `${letterSpacing}px`, lineHeight }}
           />
           <span className="pageview-page-number">{i + 1}</span>
         </div>
