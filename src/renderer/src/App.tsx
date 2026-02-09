@@ -5,29 +5,38 @@ import { useFile } from './hooks/useFile'
 import { useMenuActions } from './hooks/useMenuActions'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
-import Preview from './components/Preview'
 import PageView from './components/PageView'
+import MarkdownView from './components/MarkdownView'
 import StatusBar from './components/StatusBar'
 import SettingsPage from './components/SettingsPage'
 import Modal from './components/Modal'
 import type { ModalAction } from './components/Modal'
 
 type PendingAction = 'new-file' | 'open-file' | 'close-app' | null
+type PendingOpenRecent = string | null
+type NewFilePrompt = boolean
 
 export default function App(): React.JSX.Element {
   const { settings, currentPage, setCurrentPage } = useAppContext()
-  const { content, filePath, isDirty, setContent, openFile, saveFile, saveFileAs, newFile } =
+  const { content, filePath, isDirty, recentFiles, setContent, openFile, openFilePath, saveFile, saveFileAs, newFile } =
     useFile()
   const [viewMode, setViewMode] = useState<ViewMode>(settings.defaultView)
+  const [fileType, setFileType] = useState<'txt' | 'md'>('md')
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
+  const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
+  const [showNewFilePrompt, setShowNewFilePrompt] = useState<NewFilePrompt>(false)
 
   // Keep refs for latest values accessible in callbacks
   const isDirtyRef = useRef(isDirty)
   isDirtyRef.current = isDirty
+  const fileTypeRef = useRef(fileType)
+  fileTypeRef.current = fileType
 
   useEffect(() => {
-    if (filePath && filePath.toLowerCase().endsWith('.txt')) {
-      setViewMode('pageview')
+    if (filePath) {
+      const ext = filePath.toLowerCase().endsWith('.txt') ? 'txt' as const : 'md' as const
+      setFileType(ext)
+      setViewMode(ext === 'txt' ? 'pageview' : 'edit')
     }
   }, [filePath])
 
@@ -44,12 +53,30 @@ export default function App(): React.JSX.Element {
   )
 
   const handleNewFile = useCallback(() => {
-    guardDirty('new-file', newFile)
-  }, [guardDirty, newFile])
+    guardDirty('new-file', () => {
+      setShowNewFilePrompt(true)
+    })
+  }, [guardDirty])
+
+  const handleNewFileSelect = useCallback((ext: 'txt' | 'md') => {
+    setShowNewFilePrompt(false)
+    newFile()
+    setFileType(ext)
+    setViewMode(ext === 'txt' ? 'pageview' : 'edit')
+  }, [newFile])
 
   const handleOpenFile = useCallback(() => {
     guardDirty('open-file', openFile)
   }, [guardDirty, openFile])
+
+  const handleOpenRecent = useCallback((path: string) => {
+    if (isDirtyRef.current) {
+      setPendingOpenRecent(path)
+      setPendingAction('open-file')
+    } else {
+      openFilePath(path)
+    }
+  }, [openFilePath])
 
   const handleOpenSettings = useCallback(() => {
     setCurrentPage('settings')
@@ -58,15 +85,21 @@ export default function App(): React.JSX.Element {
   // Modal: execute the pending action
   const executePendingAction = useCallback(async () => {
     const action = pendingAction
+    const recentPath = pendingOpenRecent
     setPendingAction(null)
+    setPendingOpenRecent(null)
     if (action === 'new-file') {
-      newFile()
+      setShowNewFilePrompt(true)
     } else if (action === 'open-file') {
-      await openFile()
+      if (recentPath) {
+        await openFilePath(recentPath)
+      } else {
+        await openFile()
+      }
     } else if (action === 'close-app') {
       window.api.confirmClose()
     }
-  }, [pendingAction, newFile, openFile])
+  }, [pendingAction, pendingOpenRecent, newFile, openFile, openFilePath])
 
   const handleSaveAndContinue = useCallback(async () => {
     await saveFile()
@@ -79,6 +112,7 @@ export default function App(): React.JSX.Element {
 
   const handleCancelModal = useCallback(() => {
     setPendingAction(null)
+    setPendingOpenRecent(null)
   }, [])
 
   // Ctrl + mouse wheel zoom
@@ -115,8 +149,8 @@ export default function App(): React.JSX.Element {
     onSaveFileAs: saveFileAs,
     onOpenSettings: handleOpenSettings,
     onViewEdit: () => setViewMode('edit'),
-    onViewPreview: () => setViewMode('preview'),
-    onViewPageview: () => setViewMode('pageview')
+    onViewPreview: () => { if (fileTypeRef.current === 'md') setViewMode('preview') },
+    onViewPageview: () => { if (fileTypeRef.current === 'txt') setViewMode('pageview') }
   })
 
   const modalActions: ModalAction[] = [
@@ -135,21 +169,42 @@ export default function App(): React.JSX.Element {
         filePath={filePath}
         viewMode={viewMode}
         isDirty={isDirty}
+        recentFiles={recentFiles}
+        fileType={fileType}
         onNewFile={handleNewFile}
         onOpen={handleOpenFile}
+        onOpenRecent={handleOpenRecent}
         onSave={saveFile}
         onSaveAs={saveFileAs}
         onSetViewMode={setViewMode}
         onOpenSettings={handleOpenSettings}
       />
       <div className="editor-container">
-        {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
-        {viewMode === 'preview' && <Preview content={content} />}
-        {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
+        {fileType === 'md' ? (
+          <MarkdownView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />
+        ) : (
+          <>
+            {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
+            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
+          </>
+        )}
       </div>
       <StatusBar content={content} />
 
       {currentPage === 'settings' && <SettingsPage onClose={handleCloseSettings} />}
+
+      {showNewFilePrompt && (
+        <Modal
+          title="새로 만들기"
+          message="어떤 형식의 문서를 만드시겠습니까?"
+          actions={[
+            { label: '빈 문서 (.txt)', variant: 'primary', onClick: () => handleNewFileSelect('txt') },
+            { label: '빈 서식 문서 (.md)', variant: 'primary', onClick: () => handleNewFileSelect('md') },
+            { label: '취소', variant: 'secondary', onClick: () => setShowNewFilePrompt(false) }
+          ]}
+          onClose={() => setShowNewFilePrompt(false)}
+        />
+      )}
 
       {pendingAction && (
         <Modal

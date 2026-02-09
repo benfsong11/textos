@@ -2,11 +2,12 @@ import Markdown from 'react-markdown'
 
 interface PreviewProps {
   content: string
+  onClick?: () => void
 }
 
-export default function Preview({ content }: PreviewProps): React.JSX.Element {
+export default function Preview({ content, onClick }: PreviewProps): React.JSX.Element {
   return (
-    <div className="preview">
+    <div className="preview" onClick={onClick}>
       <Markdown>{content}</Markdown>
     </div>
   )

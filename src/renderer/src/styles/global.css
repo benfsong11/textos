@@ -373,11 +373,58 @@ body {
   background: var(--bg-tertiary);
 }
 
+.toolbar-dropdown-item-arrow {
+  position: relative;
+  padding-right: 24px !important;
+}
+
+.toolbar-dropdown-item-arrow::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+  border-left-color: var(--text-secondary);
+}
+
+.toolbar-dropdown-submenu-trigger {
+  position: relative;
+}
+
+.toolbar-dropdown-submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-left: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  z-index: 101;
+  min-width: 180px;
+}
+
+.toolbar-dropdown-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 8px;
+}
+
 /* ===== Editor ===== */
 
 .editor-container {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editor-container:has(.mdview-container) {
+  overflow-y: auto;
+  background: var(--pageview-bg);
 }
 
 .editor {
@@ -508,6 +555,7 @@ body {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  vertical-align: middle;
 }
 
 .pageview-content {
@@ -532,6 +580,7 @@ body {
   line-height: inherit;
   white-space: pre-wrap;
   word-wrap: break-word;
+  overflow: hidden;
 }
 
 .pageview-page-number {
@@ -541,6 +590,58 @@ body {
   font-family: var(--font-sans);
   font-size: 10px;
   color: var(--text-tertiary);
+}
+
+/* ===== Markdown View ===== */
+
+.mdview-container {
+  width: 100%;
+  min-height: 100%;
+  background: var(--pageview-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.mdview-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: var(--page-bg);
+  color: var(--page-text);
+  padding: 20mm;
+  box-shadow: var(--shadow-lg);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.mdview-editor {
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 11pt;
+  line-height: 1.7;
+  tab-size: 4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
+  height:auto;
+}
+
+.mdview-editor::placeholder {
+  color: var(--text-tertiary);
+}
+
+.mdview-preview {
+  cursor: text;
+  height: auto;
+  overflow: hidden;
 }
 
 /* ===== Settings Modal ===== */

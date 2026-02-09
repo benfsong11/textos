@@ -45,6 +45,18 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
   })
 
   ipcMain.handle(
+    'file:open-path',
+    async (_event, filePath: string): Promise<FileData | null> => {
+      try {
+        const content = await readFile(filePath, 'utf-8')
+        return { content, filePath }
+      } catch {
+        return null
+      }
+    }
+  )
+
+  ipcMain.handle(
     'file:save',
     async (_event, content: string, filePath: string | null): Promise<string | null> => {
       const win = BrowserWindow.getFocusedWindow()

@@ -1,22 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { ViewMode } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import SegmentedControl from './SegmentedControl'
 import type { TextAlign } from '../../../shared/types'
 import { SunIcon, MoonIcon, GearIcon, AlignLeftIcon, AlignCenterIcon, AlignRightIcon } from './icons'
 
-const viewOptions = [
-  { value: 'edit' as const, label: '편집' },
-  { value: 'preview' as const, label: '미리보기' },
-  { value: 'pageview' as const, label: '페이지' }
-]
-
 interface ToolbarProps {
   filePath: string | null
   viewMode: ViewMode
   isDirty: boolean
+  recentFiles: string[]
+  fileType: 'txt' | 'md'
   onNewFile: () => void
   onOpen: () => void
+  onOpenRecent: (filePath: string) => void
   onSave: () => void
   onSaveAs: () => void
   onSetViewMode: (mode: ViewMode) => void
@@ -27,18 +24,32 @@ export default function Toolbar({
   filePath,
   viewMode,
   isDirty,
+  recentFiles,
+  fileType,
   onNewFile,
   onOpen,
+  onOpenRecent,
   onSave,
   onSaveAs,
   onSetViewMode,
   onOpenSettings
 }: ToolbarProps): React.JSX.Element {
   const { resolvedTheme, settings, updateSettings } = useAppContext()
+
+  const viewOptions = useMemo(() => {
+    if (fileType === 'txt') {
+      return [
+        { value: 'edit' as const, label: '편집' },
+        { value: 'pageview' as const, label: '페이지' }
+      ]
+    }
+    return [{ value: 'edit' as const, label: '편집' }]
+  }, [fileType])
   const rawName = filePath ? filePath.split(/[/\\]/).pop() ?? null : null
   const displayName = rawName ? rawName.replace(/\.[^.]+$/, '') : '빈 문서'
   const [fonts, setFonts] = useState<string[]>([])
   const [fileMenuOpen, setFileMenuOpen] = useState(false)
+  const [activeSubmenu, setActiveSubmenu] = useState<'open' | null>(null)
   const fileMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -50,15 +61,26 @@ export default function Toolbar({
     const handleClick = (e: MouseEvent): void => {
       if (fileMenuRef.current && !fileMenuRef.current.contains(e.target as Node)) {
         setFileMenuOpen(false)
+        setActiveSubmenu(null)
       }
     }
     document.addEventListener('click', handleClick)
     return () => document.removeEventListener('click', handleClick)
   }, [fileMenuOpen])
 
+  // Close submenu when file menu closes
+  useEffect(() => {
+    if (!fileMenuOpen) setActiveSubmenu(null)
+  }, [fileMenuOpen])
+
   const toggleTheme = (): void => {
     const next = resolvedTheme === 'dark' ? 'light' : 'dark'
     updateSettings({ theme: next })
+  }
+
+  const closeMenu = (): void => {
+    setFileMenuOpen(false)
+    setActiveSubmenu(null)
   }
 
   return (
@@ -67,10 +89,41 @@ export default function Toolbar({
         <button onClick={() => setFileMenuOpen((v) => !v)}>파일</button>
         {fileMenuOpen && (
           <div className="toolbar-dropdown-menu">
-            <button className="toolbar-dropdown-item" onClick={() => { onNewFile(); setFileMenuOpen(false) }}>새로 만들기</button>
-            <button className="toolbar-dropdown-item" onClick={() => { onOpen(); setFileMenuOpen(false) }}>열기</button>
-            <button className="toolbar-dropdown-item" onClick={() => { onSave(); setFileMenuOpen(false) }}>저장</button>
-            <button className="toolbar-dropdown-item" onClick={() => { onSaveAs(); setFileMenuOpen(false) }}>다른 이름으로 저장</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onNewFile(); closeMenu() }}>새로 만들기</button>
+            <div
+              className="toolbar-dropdown-submenu-trigger"
+              onMouseEnter={() => setActiveSubmenu('open')}
+              onMouseLeave={() => setActiveSubmenu((v) => v === 'open' ? null : v)}
+            >
+              <button className="toolbar-dropdown-item toolbar-dropdown-item-arrow">열기</button>
+              {activeSubmenu === 'open' && (
+                <div className="toolbar-dropdown-submenu">
+                  {recentFiles.length > 0 && (
+                    <>
+                      {recentFiles.map((path) => {
+                        const name = path.split(/[/\\]/).pop() ?? path
+                        return (
+                          <button
+                            key={path}
+                            className="toolbar-dropdown-item"
+                            title={path}
+                            onClick={() => { onOpenRecent(path); closeMenu() }}
+                          >
+                            {name}
+                          </button>
+                        )
+                      })}
+                      <div className="toolbar-dropdown-divider" />
+                    </>
+                  )}
+                  <button className="toolbar-dropdown-item" onClick={() => { onOpen(); closeMenu() }}>
+                    모든 파일 보기
+                  </button>
+                </div>
+              )}
+            </div>
+            <button className="toolbar-dropdown-item" onClick={() => { onSave(); closeMenu() }}>저장</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onSaveAs(); closeMenu() }}>다른 이름으로 저장</button>
           </div>
         )}
       </div>
