@@ -11,8 +11,8 @@ const themeOptions = [
 ]
 
 const viewOptions = [
-  { value: 'edit' as const, label: '편집 모드' },
-  { value: 'pageview' as const, label: '페이지 뷰' }
+  { value: 'edit' as const, label: '일반' },
+  { value: 'pageview' as const, label: '페이지' }
 ]
 
 const charCountOptions = [
@@ -104,15 +104,15 @@ export default function SettingsPage({ onClose }: SettingsPageProps): React.JSX.
                   <div className="settings-row-label">글꼴 크기</div>
                   <div className="settings-row-description">편집기 텍스트 크기 (pt)</div>
                 </div>
-                <input
-                  className="settings-number-input"
-                  type="number"
-                  min={8}
-                  max={72}
-                  step={1}
+                <select
+                  className="settings-select"
                   value={settings.fontSize}
                   onChange={(e) => updateSettings({ fontSize: Number(e.target.value) })}
-                />
+                >
+                  {[8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 36, 48, 72].map((s) => (
+                    <option key={s} value={s}>{s}pt</option>
+                  ))}
+                </select>
               </div>
               <div className="settings-row">
                 <div>

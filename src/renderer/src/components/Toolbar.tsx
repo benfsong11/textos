@@ -39,22 +39,17 @@ export default function Toolbar({
   const viewOptions = useMemo(() => {
     if (fileType === 'txt') {
       return [
-        { value: 'edit' as const, label: '편집' },
+        { value: 'edit' as const, label: '일반' },
         { value: 'pageview' as const, label: '페이지' }
       ]
     }
-    return [{ value: 'edit' as const, label: '편집' }]
+    return [{ value: 'edit' as const, label: '서식' }]
   }, [fileType])
   const rawName = filePath ? filePath.split(/[/\\]/).pop() ?? null : null
   const displayName = rawName ? rawName.replace(/\.[^.]+$/, '') : '빈 문서'
-  const [fonts, setFonts] = useState<string[]>([])
   const [fileMenuOpen, setFileMenuOpen] = useState(false)
   const [activeSubmenu, setActiveSubmenu] = useState<'open' | null>(null)
   const fileMenuRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    window.api.getSystemFonts().then(setFonts)
-  }, [])
 
   useEffect(() => {
     if (!fileMenuOpen) return
@@ -126,36 +121,6 @@ export default function Toolbar({
             <button className="toolbar-dropdown-item" onClick={() => { onSaveAs(); closeMenu() }}>다른 이름으로 저장</button>
           </div>
         )}
-      </div>
-
-      <div className="toolbar-group">
-        <select
-          value={settings.fontFamily}
-          onChange={(e) => updateSettings({ fontFamily: e.target.value })}
-          title="글꼴"
-        >
-          {fonts.map((f) => (
-            <option key={f} value={f} style={{ fontFamily: f }}>
-              {f}
-            </option>
-          ))}
-        </select>
-        <select
-          className="toolbar-fontsize-select"
-          value={settings.fontSize}
-          onChange={(e) => updateSettings({ fontSize: Number(e.target.value) })}
-          title="글꼴 크기"
-        >
-          {(() => {
-            const presets = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 36, 48, 72]
-            const sizes = presets.includes(settings.fontSize)
-              ? presets
-              : [...presets, settings.fontSize].sort((a, b) => a - b)
-            return sizes.map((s) => (
-              <option key={s} value={s}>{s}pt</option>
-            ))
-          })()}
-        </select>
       </div>
 
       <div className="toolbar-group">
