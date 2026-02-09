@@ -24,7 +24,7 @@ export default function App(): React.JSX.Element {
   const [fileType, setFileType] = useState<'txt' | 'md'>('md')
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
   const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
-  const [showNewFilePrompt, setShowNewFilePrompt] = useState<NewFilePrompt>(false)
+  const [showNewFilePrompt, setShowNewFilePrompt] = useState<NewFilePrompt>(true)
 
   // Keep refs for latest values accessible in callbacks
   const isDirtyRef = useRef(isDirty)
