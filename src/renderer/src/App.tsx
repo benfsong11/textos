@@ -25,6 +25,7 @@ export default function App(): React.JSX.Element {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
   const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
   const [showNewFilePrompt, setShowNewFilePrompt] = useState<NewFilePrompt>(true)
+  const [fileReady, setFileReady] = useState(false)
 
   // Keep refs for latest values accessible in callbacks
   const isDirtyRef = useRef(isDirty)
@@ -37,6 +38,8 @@ export default function App(): React.JSX.Element {
       const ext = filePath.toLowerCase().endsWith('.txt') ? 'txt' as const : 'md' as const
       setFileType(ext)
       setViewMode(ext === 'txt' ? 'pageview' : 'edit')
+      setFileReady(true)
+      setShowNewFilePrompt(false)
     }
   }, [filePath])
 
@@ -60,6 +63,7 @@ export default function App(): React.JSX.Element {
 
   const handleNewFileSelect = useCallback((ext: 'txt' | 'md') => {
     setShowNewFilePrompt(false)
+    setFileReady(true)
     newFile()
     setFileType(ext)
     setViewMode(ext === 'txt' ? 'pageview' : 'edit')
@@ -180,13 +184,15 @@ export default function App(): React.JSX.Element {
         onOpenSettings={handleOpenSettings}
       />
       <div className="editor-container">
-        {fileType === 'md' ? (
-          <MarkdownView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />
-        ) : (
-          <>
-            {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
-            {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
-          </>
+        {fileReady && (
+          fileType === 'md' ? (
+            <MarkdownView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />
+          ) : (
+            <>
+              {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
+              {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
+            </>
+          )
         )}
       </div>
       <StatusBar content={content} />
@@ -200,9 +206,21 @@ export default function App(): React.JSX.Element {
           actions={[
             { label: '빈 문서 (.txt)', variant: 'primary', onClick: () => handleNewFileSelect('txt') },
             { label: '빈 서식 문서 (.md)', variant: 'primary', onClick: () => handleNewFileSelect('md') },
-            { label: '취소', variant: 'secondary', onClick: () => setShowNewFilePrompt(false) }
+            { label: '취소', variant: 'secondary', onClick: () => {
+              if (!fileReady) {
+                window.api.confirmClose()
+              } else {
+                setShowNewFilePrompt(false)
+              }
+            }}
           ]}
-          onClose={() => setShowNewFilePrompt(false)}
+          onClose={() => {
+            if (!fileReady) {
+              window.api.confirmClose()
+            } else {
+              setShowNewFilePrompt(false)
+            }
+          }}
         />
       )}
 
