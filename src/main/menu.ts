@@ -1,4 +1,4 @@
-import { Menu, BrowserWindow } from 'electron'
+import { Menu, BrowserWindow, app } from 'electron'
 import type { MenuItemConstructorOptions } from 'electron'
 
 function send(action: string): void {
@@ -7,7 +7,27 @@ function send(action: string): void {
 }
 
 export function buildMenu(): Menu {
+  const isMac = process.platform === 'darwin'
+
   const template: MenuItemConstructorOptions[] = [
+    ...(isMac
+      ? [
+          {
+            label: app.name,
+            submenu: [
+              { role: 'about' as const },
+              { type: 'separator' as const },
+              { label: '설정', accelerator: 'CmdOrCtrl+,' as const, click: () => send('open-settings') },
+              { type: 'separator' as const },
+              { role: 'hide' as const },
+              { role: 'hideOthers' as const },
+              { role: 'unhide' as const },
+              { type: 'separator' as const },
+              { role: 'quit' as const }
+            ]
+          }
+        ]
+      : []),
     {
       label: '파일',
       submenu: [
@@ -16,10 +36,14 @@ export function buildMenu(): Menu {
         { type: 'separator' },
         { label: '저장', accelerator: 'CmdOrCtrl+S', click: () => send('save-file') },
         { label: '다른 이름으로 저장...', accelerator: 'CmdOrCtrl+Shift+S', click: () => send('save-file-as') },
-        { type: 'separator' },
-        { label: '설정', accelerator: 'CmdOrCtrl+,', click: () => send('open-settings') },
-        { type: 'separator' },
-        { role: 'close' }
+        ...(!isMac
+          ? [
+              { type: 'separator' as const },
+              { label: '설정', accelerator: 'CmdOrCtrl+,' as const, click: () => send('open-settings') },
+              { type: 'separator' as const },
+              { role: 'close' as const }
+            ]
+          : [{ type: 'separator' as const }, { role: 'close' as const }])
       ]
     },
     {
@@ -31,6 +55,7 @@ export function buildMenu(): Menu {
         { role: 'cut' },
         { role: 'copy' },
         { role: 'paste' },
+        ...(isMac ? [{ role: 'pasteAndMatchStyle' as const }] : []),
         { role: 'selectAll' }
       ]
     },

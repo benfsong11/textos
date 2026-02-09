@@ -7,6 +7,8 @@ let mainWindow: BrowserWindow | null = null
 let forceClose = false
 
 function createWindow(): void {
+  const isMac = process.platform === 'darwin'
+
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
@@ -14,8 +16,9 @@ function createWindow(): void {
     minHeight: 400,
     show: false,
     title: 'Textos',
-    autoHideMenuBar: true,
-    icon: join(app.getAppPath(), 'resources', 'app.ico'),
+    autoHideMenuBar: !isMac,
+    icon: join(app.getAppPath(), 'resources', isMac ? 'app.png' : 'app.ico'),
+    ...(isMac ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 16, y: 12 } } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,

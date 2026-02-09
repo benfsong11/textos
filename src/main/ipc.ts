@@ -10,17 +10,27 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
     if (cachedFonts) return cachedFonts
 
     try {
-      const output = execSync(
-        'powershell -NoProfile -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Add-Type -AssemblyName System.Drawing; (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name"',
-        { encoding: 'utf-8', timeout: 10000 }
-      )
+      let output: string
+      if (process.platform === 'darwin') {
+        output = execSync(
+          'osascript -l JavaScript -e \'ObjC.import("AppKit"); let fonts = $.NSFontManager.sharedFontManager.availableFontFamilies; let r = []; for (let i = 0; i < fonts.count; i++) r.push(fonts.objectAtIndex(i).js); r.join("\\n")\'',
+          { encoding: 'utf-8', timeout: 10000 }
+        )
+      } else {
+        output = execSync(
+          'powershell -NoProfile -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Add-Type -AssemblyName System.Drawing; (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name"',
+          { encoding: 'utf-8', timeout: 10000 }
+        )
+      }
       cachedFonts = output
         .split(/\r?\n/)
         .map((s) => s.trim())
         .filter((s) => s.length > 0)
         .sort()
     } catch {
-      cachedFonts = ['Arial', 'Consolas', 'Courier New', 'Georgia', 'Times New Roman', 'Verdana']
+      cachedFonts = process.platform === 'darwin'
+        ? ['Arial', 'Helvetica', 'Menlo', 'Monaco', 'Georgia', 'Times New Roman', 'Verdana']
+        : ['Arial', 'Consolas', 'Courier New', 'Georgia', 'Times New Roman', 'Verdana']
     }
 
     return cachedFonts

@@ -119,6 +119,13 @@ export default function App(): React.JSX.Element {
     setPendingOpenRecent(null)
   }, [])
 
+  // Set platform attribute for CSS
+  useEffect(() => {
+    if (navigator.platform.includes('Mac')) {
+      document.body.dataset.platform = 'darwin'
+    }
+  }, [])
+
   // Ctrl + mouse wheel zoom
   useEffect(() => {
     const handleWheel = (e: WheelEvent): void => {
