@@ -9,11 +9,13 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 win:
+  signAndEditExecutable: false
   target:
     - nsis
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  artifactName: ${name}-${version}-${arch}.${ext}
 mac:
   icon: resources/app.icns
   category: public.app-category.productivity
