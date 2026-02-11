@@ -48,8 +48,11 @@ npm run dev
 # 프로덕션 빌드
 npm run build
 
-# 릴리즈 패키징
+# 릴리즈 패키징 (Windows)
 npx electron-builder --win --x64
+
+# 릴리즈 패키징 (macOS)
+npx electron-builder --mac --arm64
 ```
 
 ## 기술 스택
