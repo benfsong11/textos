@@ -1,10 +1,27 @@
 import { app, BrowserWindow, Menu, shell } from 'electron'
 import { join } from 'path'
+import { existsSync } from 'fs'
 import { registerIpcHandlers } from './ipc'
 import { buildMenu } from './menu'
 
 let mainWindow: BrowserWindow | null = null
 let forceClose = false
+let pendingFilePath: string | null = null
+
+function getFilePathFromArgs(argv: string[]): string | null {
+  const args = argv.slice(app.isPackaged ? 1 : 2)
+  const filePath = args.find(arg => !arg.startsWith('-') && existsSync(arg))
+  return filePath || null
+}
+
+pendingFilePath = getFilePathFromArgs(process.argv)
+
+function sendPendingFile(): void {
+  if (pendingFilePath && mainWindow) {
+    mainWindow.webContents.send('file:open-from-argv', pendingFilePath)
+    pendingFilePath = null
+  }
+}
 
 function createWindow(): void {
   const isMac = process.platform === 'darwin'
@@ -31,6 +48,10 @@ function createWindow(): void {
     mainWindow!.show()
   })
 
+  mainWindow.webContents.on('did-finish-load', () => {
+    sendPendingFile()
+  })
+
   mainWindow.on('close', (e) => {
     if (!forceClose) {
       e.preventDefault()
@@ -49,6 +70,31 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
+// Single instance lock (Windows: second double-click sends argv here)
+const gotLock = app.requestSingleInstanceLock()
+if (!gotLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (_event, argv) => {
+    const filePath = getFilePathFromArgs(argv)
+    if (filePath && mainWindow) {
+      mainWindow.webContents.send('file:open-from-argv', filePath)
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+}
+
+// macOS: file opened via Finder
+app.on('open-file', (event, path) => {
+  event.preventDefault()
+  if (mainWindow) {
+    mainWindow.webContents.send('file:open-from-argv', path)
+  } else {
+    pendingFilePath = path
+  }
+})
 
 app.whenReady().then(() => {
   registerIpcHandlers(() => {
