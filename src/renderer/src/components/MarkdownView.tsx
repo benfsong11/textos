@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-const markdownComponents = {
+export const markdownComponents = {
   a: ({ href, children }: { href?: string; children?: React.ReactNode }): React.JSX.Element => (
     <a
       href={href}
