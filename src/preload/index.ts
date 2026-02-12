@@ -17,6 +17,7 @@ const api: ElectronAPI = {
       ipcRenderer.removeListener('before-close', handler)
     }
   },
+  openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   onMenuAction: (callback) => {
     const handler = (_event: Electron.IpcRendererEvent, action: string): void => callback(action)
     ipcRenderer.on('menu:action', handler)

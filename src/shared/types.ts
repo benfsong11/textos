@@ -37,4 +37,5 @@ export interface ElectronAPI {
   getSystemFonts: () => Promise<string[]>
   getZoomFactor: () => number
   setZoomFactor: (factor: number) => void
+  openExternal: (url: string) => Promise<void>
 }

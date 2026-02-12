@@ -2,6 +2,21 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
+const markdownComponents = {
+  a: ({ href, children }: { href?: string; children?: React.ReactNode }): React.JSX.Element => (
+    <a
+      href={href}
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (href) window.api.openExternal(href)
+      }}
+    >
+      {children}
+    </a>
+  )
+}
+
 interface MarkdownViewProps {
   content: string
   onChange: (content: string) => void
@@ -56,7 +71,7 @@ export default function MarkdownView({ content, onChange, fontFamily, fontSize, 
           />
         ) : (
           <div className="mdview-preview preview" onClick={handlePreviewClick}>
-            <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{content}</Markdown>
           </div>
         )}
       </div>

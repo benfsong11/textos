@@ -1,4 +1,4 @@
-import { ipcMain, dialog, BrowserWindow } from 'electron'
+import { ipcMain, dialog, shell, BrowserWindow } from 'electron'
 import { readFile, writeFile } from 'fs/promises'
 import { execSync } from 'child_process'
 import type { FileData } from '../shared/types'
@@ -110,6 +110,10 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
       return result.filePath
     }
   )
+
+  ipcMain.handle('shell:openExternal', (_event, url: string) => {
+    shell.openExternal(url)
+  })
 
   ipcMain.on('app:close-confirmed', () => {
     onCloseConfirmed()
