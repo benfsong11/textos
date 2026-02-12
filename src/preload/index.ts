@@ -18,6 +18,13 @@ const api: ElectronAPI = {
     }
   },
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
+  onOpenFileFromArgv: (callback) => {
+    const handler = (_event: Electron.IpcRendererEvent, filePath: string): void => callback(filePath)
+    ipcRenderer.on('file:open-from-argv', handler)
+    return () => {
+      ipcRenderer.removeListener('file:open-from-argv', handler)
+    }
+  },
   onMenuAction: (callback) => {
     const handler = (_event: Electron.IpcRendererEvent, action: string): void => callback(action)
     ipcRenderer.on('menu:action', handler)

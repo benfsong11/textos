@@ -8,6 +8,16 @@ files:
   - '!electron.vite.config.*'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+fileAssociations:
+  - ext: txt
+    name: Textos Text Document
+    role: Editor
+  - ext: md
+    name: Textos Markdown Document
+    role: Editor
+  - ext: markdown
+    name: Textos Markdown Document
+    role: Editor
 win:
   signAndEditExecutable: false
   target:

@@ -38,4 +38,5 @@ export interface ElectronAPI {
   getZoomFactor: () => number
   setZoomFactor: (factor: number) => void
   openExternal: (url: string) => Promise<void>
+  onOpenFileFromArgv: (callback: (filePath: string) => void) => () => void
 }

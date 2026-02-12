@@ -142,6 +142,14 @@ export default function App(): React.JSX.Element {
     return () => window.removeEventListener('wheel', handleWheel)
   }, [])
 
+  // Listen for file open from argv (double-click / file association)
+  useEffect(() => {
+    const cleanup = window.api.onOpenFileFromArgv((path) => {
+      openFilePath(path)
+    })
+    return cleanup
+  }, [openFilePath])
+
   // Listen for before-close from main process
   useEffect(() => {
     const cleanup = window.api.onBeforeClose(() => {

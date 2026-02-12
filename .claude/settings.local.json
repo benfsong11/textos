@@ -16,7 +16,8 @@
       "Bash(node:*)",
       "Bash(npx --yes icon-gen:*)",
       "Bash(npx --yes sharp-cli:*)",
-      "Bash(npx icon-gen:*)"
+      "Bash(npx icon-gen:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
