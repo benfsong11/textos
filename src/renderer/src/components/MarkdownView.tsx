@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface MarkdownViewProps {
   content: string
@@ -55,7 +56,7 @@ export default function MarkdownView({ content, onChange, fontFamily, fontSize, 
           />
         ) : (
           <div className="mdview-preview preview" onClick={handlePreviewClick}>
-            <Markdown>{content}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
           </div>
         )}
       </div>

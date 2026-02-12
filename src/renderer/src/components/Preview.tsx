@@ -1,4 +1,5 @@
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface PreviewProps {
   content: string
@@ -8,7 +9,7 @@ interface PreviewProps {
 export default function Preview({ content, onClick }: PreviewProps): React.JSX.Element {
   return (
     <div className="preview" onClick={onClick}>
-      <Markdown>{content}</Markdown>
+      <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
     </div>
   )
 }

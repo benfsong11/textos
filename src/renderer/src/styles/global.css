@@ -532,6 +532,78 @@ body {
   margin: 1.5em 0;
 }
 
+.preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.preview del {
+  color: var(--text-tertiary);
+}
+
+.preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+  font-size: 0.95em;
+}
+
+.preview th,
+.preview td {
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.preview th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.preview tr:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
+.preview ul.contains-task-list {
+  list-style: none;
+  padding-left: 4px;
+}
+
+.preview li.task-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.preview li.task-list-item input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.preview .footnotes {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
+.preview .footnotes ol {
+  padding-left: 20px;
+}
+
+.preview sup a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0 2px;
+}
+
+.preview .data-footnote-backref {
+  text-decoration: none;
+}
+
 /* ===== Page View ===== */
 
 .pageview-container {
