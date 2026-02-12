@@ -1,22 +1,12 @@
-import { useState, useEffect } from 'react'
 import { useAppContext } from '../context/AppContext'
 
 interface StatusBarProps {
   content: string
+  zoom: number
 }
 
-export default function StatusBar({ content }: StatusBarProps): React.JSX.Element {
+export default function StatusBar({ content, zoom }: StatusBarProps): React.JSX.Element {
   const { settings } = useAppContext()
-  const [zoomPercent, setZoomPercent] = useState(100)
-
-  useEffect(() => {
-    const update = (): void => {
-      setZoomPercent(Math.round(window.api.getZoomFactor() * 100))
-    }
-    update()
-    const id = setInterval(update, 500)
-    return () => clearInterval(id)
-  }, [])
 
   const charCount =
     settings.charCountRule === 'without-spaces'
@@ -26,7 +16,7 @@ export default function StatusBar({ content }: StatusBarProps): React.JSX.Elemen
   return (
     <div className="status-bar">
       <div className="status-bar-left">
-        <span className="status-bar-item">{zoomPercent}%</span>
+        <span className="status-bar-item">{Math.round(zoom * 100)}%</span>
       </div>
       <div className="status-bar-center">
         <span className="status-bar-item">{charCount}자</span>

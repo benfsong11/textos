@@ -67,9 +67,9 @@ export function buildMenu(): Menu {
         { label: '페이지 뷰', accelerator: 'CmdOrCtrl+3', click: () => send('view-pageview') },
         { type: 'separator' },
         { role: 'toggleDevTools' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
+        { label: '확대', accelerator: 'CmdOrCtrl+=', click: () => send('zoom-in') },
+        { label: '축소', accelerator: 'CmdOrCtrl+-', click: () => send('zoom-out') },
+        { label: '기본 크기', accelerator: 'CmdOrCtrl+0', click: () => send('zoom-reset') },
         { role: 'togglefullscreen' }
       ]
     }
