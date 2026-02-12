@@ -7,9 +7,22 @@ export const markdownComponents = {
     <a
       href={href}
       onClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (href) window.api.openExternal(href)
+        if (!href) {
+          return
+        }
+
+        const isHashLink = href.startsWith('#')
+        const isExternalLink = /^https?:\/\//i.test(href) || href.startsWith('mailto:')
+
+        if (isExternalLink) {
+          e.preventDefault()
+          e.stopPropagation()
+          window.api.openExternal(href)
+        } else if (isHashLink) {
+          // Allow default browser behavior for in-page anchors (scroll to target),
+          // but stop propagation so the click doesn't toggle edit mode.
+          e.stopPropagation()
+        }
       }}
     >
       {children}
