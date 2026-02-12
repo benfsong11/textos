@@ -1,4 +1,4 @@
-import { ipcMain, dialog, BrowserWindow } from 'electron'
+import { ipcMain, dialog, shell, BrowserWindow } from 'electron'
 import { readFile, writeFile } from 'fs/promises'
 import { execSync } from 'child_process'
 import type { FileData } from '../shared/types'
@@ -110,6 +110,18 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
       return result.filePath
     }
   )
+
+  ipcMain.handle('shell:openExternal', async (_event, url: string) => {
+    const allowed = ['http:', 'https:', 'mailto:']
+    let parsed: URL
+    try {
+      parsed = new URL(url)
+      if (!allowed.includes(parsed.protocol)) return
+    } catch {
+      return
+    }
+    return shell.openExternal(parsed.toString())
+  })
 
   ipcMain.on('app:close-confirmed', () => {
     onCloseConfirmed()

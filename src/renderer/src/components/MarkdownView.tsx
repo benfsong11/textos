@@ -1,5 +1,38 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+export const markdownComponents = {
+  a: ({ href, children }: { href?: string; children?: React.ReactNode }): React.JSX.Element => (
+    <a
+      href={href}
+      onClick={(e) => {
+        if (!href) {
+          return
+        }
+
+        const isHashLink = href.startsWith('#')
+        const isExternalLink = /^https?:\/\//i.test(href) || href.startsWith('mailto:')
+
+        if (isExternalLink) {
+          e.preventDefault()
+          e.stopPropagation()
+          window.api.openExternal(href)
+        } else if (isHashLink) {
+          // Allow default browser behavior for in-page anchors (scroll to target),
+          // but stop propagation so the click doesn't toggle edit mode.
+          e.stopPropagation()
+        } else {
+          // Prevent Electron window from navigating away on relative/internal links.
+          e.preventDefault()
+          e.stopPropagation()
+        }
+      }}
+    >
+      {children}
+    </a>
+  )
+}
 
 interface MarkdownViewProps {
   content: string
@@ -55,7 +88,7 @@ export default function MarkdownView({ content, onChange, fontFamily, fontSize, 
           />
         ) : (
           <div className="mdview-preview preview" onClick={handlePreviewClick}>
-            <Markdown>{content}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{content}</Markdown>
           </div>
         )}
       </div>
