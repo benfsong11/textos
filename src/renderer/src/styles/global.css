@@ -599,7 +599,7 @@ body {
   color: var(--accent);
   text-decoration: none;
   font-weight: 600;
-  padding: 0 2px;
+.preview a[data-footnote-backref] {
 }
 
 .preview .data-footnote-backref {
