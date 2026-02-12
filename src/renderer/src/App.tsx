@@ -36,8 +36,10 @@ export default function App(): React.JSX.Element {
   useEffect(() => {
     if (filePath) {
       const ext = filePath.toLowerCase().endsWith('.txt') ? 'txt' as const : 'md' as const
-      setFileType(ext)
-      setViewMode(ext === 'txt' ? 'pageview' : 'edit')
+      if (ext !== fileTypeRef.current) {
+        setFileType(ext)
+        setViewMode(ext === 'txt' ? 'pageview' : 'edit')
+      }
       setFileReady(true)
       setShowNewFilePrompt(false)
     }
