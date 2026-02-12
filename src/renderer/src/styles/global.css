@@ -672,7 +672,7 @@ body {
 
 .mdview-container {
   width: 100%;
-  min-height: 100%;
+  flex: 1;
   background: var(--pageview-bg);
   display: flex;
   flex-direction: column;
@@ -682,7 +682,7 @@ body {
 
 .mdview-page {
   width: 210mm;
-  min-height: 297mm;
+  flex: 1;
   background: var(--page-bg);
   color: var(--page-text);
   padding: 20mm;
@@ -690,10 +690,10 @@ body {
   border-radius: 2px;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
 }
 
 .mdview-editor {
+  width: 100%;
   border: none;
   outline: none;
   resize: none;
@@ -707,7 +707,6 @@ body {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow: hidden;
-  height:auto;
 }
 
 .mdview-editor::placeholder {
@@ -715,8 +714,8 @@ body {
 }
 
 .mdview-preview {
+  flex: 1;
   cursor: text;
-  height: auto;
   overflow: hidden;
 }
 
