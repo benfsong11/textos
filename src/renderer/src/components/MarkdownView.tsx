@@ -52,12 +52,26 @@ export default function MarkdownView({ content, onChange, fontFamily, fontSize, 
     }
   }, [editing])
 
-  // Auto-resize textarea to fit content (no internal scrollbar)
+  // Auto-resize: fill viewport at minimum, grow when content exceeds it
   useEffect(() => {
     const el = textareaRef.current
     if (!el) return
-    el.style.height = 'auto'
-    el.style.height = el.scrollHeight + 'px'
+    const page = el.closest('.mdview-page') as HTMLElement
+    if (!page) return
+
+    // Collapse textarea so page height is determined by flex layout (viewport fill)
+    el.style.height = '0'
+
+    // Page fills viewport via flex:1; read its actual rendered height
+    const pageStyle = getComputedStyle(page)
+    const paddingTop = parseFloat(pageStyle.paddingTop) || 0
+    const paddingBottom = parseFloat(pageStyle.paddingBottom) || 0
+    const availableHeight = page.clientHeight - paddingTop - paddingBottom
+
+    const contentHeight = el.scrollHeight
+
+    // Fill viewport at minimum, grow with content
+    el.style.height = Math.max(contentHeight, availableHeight) + 'px'
   }, [content, editing])
 
   const handleBlur = useCallback(() => {
