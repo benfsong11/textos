@@ -26,12 +26,15 @@ export default function App(): React.JSX.Element {
   const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
   const [showNewFilePrompt, setShowNewFilePrompt] = useState<NewFilePrompt>(true)
   const [fileReady, setFileReady] = useState(false)
+  const [contentZoom, setContentZoom] = useState(1.0)
 
   // Keep refs for latest values accessible in callbacks
   const isDirtyRef = useRef(isDirty)
   isDirtyRef.current = isDirty
   const fileTypeRef = useRef(fileType)
   fileTypeRef.current = fileType
+  const contentZoomRef = useRef(contentZoom)
+  contentZoomRef.current = contentZoom
 
   useEffect(() => {
     if (filePath) {
@@ -128,19 +131,22 @@ export default function App(): React.JSX.Element {
     }
   }, [])
 
+  const applyZoom = useCallback((delta: number) => {
+    const current = contentZoomRef.current
+    const next = Math.min(3.0, Math.max(0.5, Math.round((current + delta) * 10) / 10))
+    setContentZoom(next)
+  }, [])
+
   // Ctrl + mouse wheel zoom
   useEffect(() => {
     const handleWheel = (e: WheelEvent): void => {
       if (!e.ctrlKey) return
       e.preventDefault()
-      const current = window.api.getZoomFactor()
-      const delta = e.deltaY > 0 ? -0.1 : 0.1
-      const next = Math.min(3.0, Math.max(0.5, current + delta))
-      window.api.setZoomFactor(next)
+      applyZoom(e.deltaY > 0 ? -0.1 : 0.1)
     }
     window.addEventListener('wheel', handleWheel, { passive: false })
     return () => window.removeEventListener('wheel', handleWheel)
-  }, [])
+  }, [applyZoom])
 
   // Listen for file open from argv (double-click / file association)
   useEffect(() => {
@@ -171,7 +177,10 @@ export default function App(): React.JSX.Element {
     onOpenSettings: handleOpenSettings,
     onViewEdit: () => setViewMode('edit'),
     onViewPreview: () => { if (fileTypeRef.current === 'md') setViewMode('preview') },
-    onViewPageview: () => { if (fileTypeRef.current === 'txt') setViewMode('pageview') }
+    onViewPageview: () => { if (fileTypeRef.current === 'txt') setViewMode('pageview') },
+    onZoomIn: () => applyZoom(0.1),
+    onZoomOut: () => applyZoom(-0.1),
+    onZoomReset: () => setContentZoom(1.0)
   })
 
   const modalActions: ModalAction[] = [
@@ -200,7 +209,7 @@ export default function App(): React.JSX.Element {
         onSetViewMode={setViewMode}
         onOpenSettings={handleOpenSettings}
       />
-      <div className="editor-container">
+      <div className="editor-container" style={{ zoom: contentZoom }}>
         {fileReady && (
           fileType === 'md' ? (
             <MarkdownView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />
@@ -212,7 +221,7 @@ export default function App(): React.JSX.Element {
           )
         )}
       </div>
-      <StatusBar content={content} />
+      <StatusBar content={content} zoom={contentZoom} />
 
       {currentPage === 'settings' && <SettingsPage onClose={handleCloseSettings} />}
 

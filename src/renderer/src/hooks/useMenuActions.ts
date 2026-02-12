@@ -9,6 +9,9 @@ interface MenuHandlers {
   onViewEdit: () => void
   onViewPreview: () => void
   onViewPageview: () => void
+  onZoomIn: () => void
+  onZoomOut: () => void
+  onZoomReset: () => void
 }
 
 export function useMenuActions(handlers: MenuHandlers): void {
@@ -38,6 +41,15 @@ export function useMenuActions(handlers: MenuHandlers): void {
           break
         case 'view-pageview':
           handlers.onViewPageview()
+          break
+        case 'zoom-in':
+          handlers.onZoomIn()
+          break
+        case 'zoom-out':
+          handlers.onZoomOut()
+          break
+        case 'zoom-reset':
+          handlers.onZoomReset()
           break
       }
     })
