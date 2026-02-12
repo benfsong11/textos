@@ -112,6 +112,13 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
   )
 
   ipcMain.handle('shell:openExternal', async (_event, url: string) => {
+    const allowed = ['http:', 'https:', 'mailto:']
+    try {
+      const parsed = new URL(url)
+      if (!allowed.includes(parsed.protocol)) return
+    } catch {
+      return
+    }
     return shell.openExternal(url)
   })
 
