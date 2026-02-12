@@ -565,7 +565,8 @@ body {
   background: var(--bg-secondary);
 }
 
-.preview ul.contains-task-list {
+.preview ul.contains-task-list,
+.preview ol.contains-task-list {
   list-style: none;
   padding-left: 4px;
 }
