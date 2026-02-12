@@ -12,7 +12,7 @@ interface PageViewProps {
 }
 
 export default function PageView({ content, onChange, fontFamily, fontSize, textAlign, letterSpacing, lineHeight }: PageViewProps): React.JSX.Element {
-  const pages = usePageBreaks(content)
+  const pages = usePageBreaks(content, { fontSize, lineHeight })
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   const cursorRef = useRef<{ absolutePos: number; pageIndex: number } | null>(null)
 
