@@ -111,8 +111,8 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
     }
   )
 
-  ipcMain.handle('shell:openExternal', (_event, url: string) => {
-    shell.openExternal(url)
+  ipcMain.handle('shell:openExternal', async (_event, url: string) => {
+    return shell.openExternal(url)
   })
 
   ipcMain.on('app:close-confirmed', () => {
