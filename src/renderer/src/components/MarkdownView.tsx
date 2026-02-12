@@ -22,6 +22,10 @@ export const markdownComponents = {
           // Allow default browser behavior for in-page anchors (scroll to target),
           // but stop propagation so the click doesn't toggle edit mode.
           e.stopPropagation()
+        } else {
+          // Prevent Electron window from navigating away on relative/internal links.
+          e.preventDefault()
+          e.stopPropagation()
         }
       }}
     >
