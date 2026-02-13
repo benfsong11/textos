@@ -123,45 +123,37 @@ body {
   padding: 8px 16px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
-  -webkit-app-region: drag;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-[data-platform="darwin"] .toolbar {
-  padding-left: 80px;
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.toolbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .toolbar-group {
   display: flex;
   align-items: center;
   gap: 4px;
-  -webkit-app-region: no-drag;
-}
-
-.toolbar-spacer {
-  flex: 1;
-  min-width: 8px;
-}
-
-.toolbar-title {
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  -webkit-app-region: no-drag;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 240px;
-  transition: color 0.2s ease;
-}
-
-.toolbar-dirty {
-  color: var(--accent);
-  margin-left: 2px;
 }
 
 .toolbar button {
-  -webkit-app-region: no-drag;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +197,6 @@ body {
 
 .toolbar select,
 .toolbar input[type='number'] {
-  -webkit-app-region: no-drag;
   background: var(--bg-tertiary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
@@ -272,7 +263,6 @@ body {
   border-radius: 10px;
   padding: 3px;
   gap: 2px;
-  -webkit-app-region: no-drag;
 }
 
 .segmented-control button {
@@ -350,7 +340,6 @@ body {
 
 .toolbar-dropdown {
   position: relative;
-  -webkit-app-region: no-drag;
 }
 
 .toolbar-dropdown-menu {
@@ -948,23 +937,40 @@ body {
 .titlebar {
   display: flex;
   align-items: center;
-  justify-content: center;
   height: 36px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   -webkit-app-region: drag;
   flex-shrink: 0;
-  padding: 0 140px;
+  padding: 0 16px;
+  padding-right: 140px;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 [data-platform="darwin"] .titlebar {
-  padding-left: max(140px, 80px);
+  padding-left: 80px;
+  padding-right: 16px;
 }
 
-/* ===== Title Bar Search ===== */
+.titlebar-title {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  transition: color 0.2s ease;
+}
 
-.titlebar-search {
+.titlebar-dirty {
+  color: var(--accent);
+  margin-left: 2px;
+}
+
+/* ===== Toolbar Search ===== */
+
+.toolbar-search {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -972,30 +978,28 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0 8px;
-  height: 26px;
-  width: 320px;
-  max-width: 100%;
-  -webkit-app-region: no-drag;
+  height: 30px;
+  width: 240px;
   transition: border-color 0.15s ease;
 }
 
-.titlebar-search:focus-within {
+.toolbar-search:focus-within {
   border-color: var(--accent);
 }
 
-.titlebar-search-icon {
+.toolbar-search-icon {
   display: flex;
   align-items: center;
   color: var(--text-tertiary);
   flex-shrink: 0;
 }
 
-.titlebar-search-icon svg {
+.toolbar-search-icon svg {
   width: 14px;
   height: 14px;
 }
 
-.titlebar-search-input {
+.toolbar-search-input {
   flex: 1;
   background: transparent;
   border: none;
@@ -1006,25 +1010,25 @@ body {
   min-width: 0;
 }
 
-.titlebar-search-input::placeholder {
+.toolbar-search-input::placeholder {
   color: var(--text-tertiary);
 }
 
-.titlebar-search-nav {
+.toolbar-search-nav {
   display: flex;
   align-items: center;
   gap: 2px;
   flex-shrink: 0;
 }
 
-.titlebar-search-count {
+.toolbar-search-count {
   font-size: 11px;
   color: var(--text-tertiary);
   white-space: nowrap;
   margin-right: 4px;
 }
 
-.titlebar-search-nav-btn {
+.toolbar-search-nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1038,22 +1042,22 @@ body {
   transition: color 0.15s ease, background 0.15s ease;
 }
 
-.titlebar-search-nav-btn:hover:not(:disabled) {
+.toolbar-search-nav-btn:hover:not(:disabled) {
   color: var(--text-primary);
   background: var(--bg-secondary);
 }
 
-.titlebar-search-nav-btn:disabled {
+.toolbar-search-nav-btn:disabled {
   opacity: 0.3;
   cursor: default;
 }
 
-.titlebar-search-nav-btn svg {
+.toolbar-search-nav-btn svg {
   width: 14px;
   height: 14px;
 }
 
-.titlebar-search-close {
+.toolbar-search-close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1067,12 +1071,12 @@ body {
   transition: color 0.15s ease, background 0.15s ease;
 }
 
-.titlebar-search-close:hover {
+.toolbar-search-close:hover {
   color: var(--text-primary);
   background: var(--bg-secondary);
 }
 
-.titlebar-search-close svg {
+.toolbar-search-close svg {
   width: 12px;
   height: 12px;
 }
