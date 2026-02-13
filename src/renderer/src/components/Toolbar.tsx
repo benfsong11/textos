@@ -78,13 +78,16 @@ export default function Toolbar({
     setActiveSubmenu(null)
   }
 
+  const isMac = navigator.platform.startsWith('Mac')
+  const mod = isMac ? '⌘' : 'Ctrl+'
+
   return (
     <div className="toolbar">
       <div className="toolbar-dropdown" ref={fileMenuRef}>
         <button onClick={() => setFileMenuOpen((v) => !v)}>파일</button>
         {fileMenuOpen && (
           <div className="toolbar-dropdown-menu">
-            <button className="toolbar-dropdown-item" onClick={() => { onNewFile(); closeMenu() }}>새로 만들기</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onNewFile(); closeMenu() }}>새로 만들기<span className="toolbar-dropdown-shortcut">{mod}N</span></button>
             <div
               className="toolbar-dropdown-submenu-trigger"
               onMouseEnter={() => setActiveSubmenu('open')}
@@ -112,13 +115,13 @@ export default function Toolbar({
                     </>
                   )}
                   <button className="toolbar-dropdown-item" onClick={() => { onOpen(); closeMenu() }}>
-                    모든 파일 보기
+                    모든 파일 보기<span className="toolbar-dropdown-shortcut">{mod}O</span>
                   </button>
                 </div>
               )}
             </div>
-            <button className="toolbar-dropdown-item" onClick={() => { onSave(); closeMenu() }}>저장</button>
-            <button className="toolbar-dropdown-item" onClick={() => { onSaveAs(); closeMenu() }}>다른 이름으로 저장</button>
+            <button className="toolbar-dropdown-item" onClick={() => { onSave(); closeMenu() }}>저장<span className="toolbar-dropdown-shortcut">{mod}S</span></button>
+            <button className="toolbar-dropdown-item" onClick={() => { onSaveAs(); closeMenu() }}>다른 이름으로 저장<span className="toolbar-dropdown-shortcut">{isMac ? '⇧⌘S' : 'Ctrl+Shift+S'}</span></button>
           </div>
         )}
       </div>
