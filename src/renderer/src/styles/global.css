@@ -317,6 +317,7 @@ body {
 
 .status-bar-right {
   flex: 1;
+  text-align: right;
 }
 
 .status-bar-item {

@@ -21,7 +21,9 @@ export default function StatusBar({ content, zoom }: StatusBarProps): React.JSX.
       <div className="status-bar-center">
         <span className="status-bar-item">{charCount}자</span>
       </div>
-      <div className="status-bar-right" />
+      <div className="status-bar-right">
+        <span className="status-bar-item">UTF-8</span>
+      </div>
     </div>
   )
 }
