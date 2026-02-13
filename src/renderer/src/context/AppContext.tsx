@@ -14,6 +14,7 @@ const STORAGE_KEY = 'textos-settings'
 const defaultSettings: AppSettings = {
   theme: 'system',
   defaultView: 'pageview',
+  defaultFileType: 'txt',
   fontFamily: 'Consolas',
   fontSize: 11,
   charCountRule: 'with-spaces',
