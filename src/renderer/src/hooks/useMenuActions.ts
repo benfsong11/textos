@@ -6,9 +6,6 @@ interface MenuHandlers {
   onSaveFile: () => void
   onSaveFileAs: () => void
   onOpenSettings: () => void
-  onViewEdit: () => void
-  onViewPreview: () => void
-  onViewPageview: () => void
   onZoomIn: () => void
   onZoomOut: () => void
   onZoomReset: () => void
@@ -33,15 +30,6 @@ export function useMenuActions(handlers: MenuHandlers): void {
           break
         case 'open-settings':
           handlers.onOpenSettings()
-          break
-        case 'view-edit':
-          handlers.onViewEdit()
-          break
-        case 'view-preview':
-          handlers.onViewPreview()
-          break
-        case 'view-pageview':
-          handlers.onViewPageview()
           break
         case 'zoom-in':
           handlers.onZoomIn()

@@ -22,16 +22,7 @@ export default function App(): React.JSX.Element {
   const { settings, currentPage, setCurrentPage } = useAppContext()
   const { content, filePath, isDirty, recentFiles, setContent, openFile, openFilePath, saveFile, saveFileAs, newFile } =
     useFile()
-  const [viewMode, setViewModeRaw] = useState<ViewMode>(() => {
-    if (settings.defaultView === 'last') {
-      return (localStorage.getItem('textos-last-view') as ViewMode) || 'edit'
-    }
-    return settings.defaultView
-  })
-  const setViewMode = useCallback((mode: ViewMode) => {
-    setViewModeRaw(mode)
-    localStorage.setItem('textos-last-view', mode)
-  }, [])
+  const [viewMode, setViewMode] = useState<ViewMode>(settings.defaultView)
   const [fileType, setFileTypeRaw] = useState<'txt' | 'md'>(() => {
     if (settings.defaultFileType === 'last') {
       return (localStorage.getItem(LAST_FILE_TYPE_KEY) as 'txt' | 'md') || 'txt'
@@ -59,11 +50,14 @@ export default function App(): React.JSX.Element {
 
   const resolveViewMode = useCallback((ext: 'txt' | 'md'): ViewMode => {
     if (ext === 'md') return 'edit'
-    if (settings.defaultView === 'last') {
-      const last = localStorage.getItem('textos-last-view') as ViewMode | null
-      return (last === 'edit' || last === 'pageview') ? last : 'pageview'
-    }
     return settings.defaultView
+  }, [settings.defaultView])
+
+  // Sync viewMode when settings.defaultView changes
+  useEffect(() => {
+    if (fileType !== 'md') {
+      setViewMode(settings.defaultView)
+    }
   }, [settings.defaultView])
 
   useEffect(() => {
@@ -245,9 +239,6 @@ export default function App(): React.JSX.Element {
     onSaveFile: () => saveFile(fileTypeRef.current),
     onSaveFileAs: () => saveFileAs(fileTypeRef.current),
     onOpenSettings: handleOpenSettings,
-    onViewEdit: () => setViewMode('edit'),
-    onViewPreview: () => { if (fileTypeRef.current === 'md') setViewMode('preview') },
-    onViewPageview: () => { if (fileTypeRef.current === 'txt') setViewMode('pageview') },
     onZoomIn: () => applyZoom(0.1),
     onZoomOut: () => applyZoom(-0.1),
     onZoomReset: () => setContentZoom(1.0),
@@ -281,13 +272,11 @@ export default function App(): React.JSX.Element {
         viewMode={viewMode}
         isDirty={isDirty}
         recentFiles={recentFiles}
-        fileType={fileType}
         onNewFile={handleNewFile}
         onOpen={handleOpenFile}
         onOpenRecent={handleOpenRecent}
         onSave={() => saveFile(fileTypeRef.current)}
         onSaveAs={() => saveFileAs(fileTypeRef.current)}
-        onSetViewMode={setViewMode}
         onOpenSettings={handleOpenSettings}
       />
       <div className="editor-container" style={{ zoom: contentZoom }}>

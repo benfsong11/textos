@@ -2,7 +2,7 @@ export type ViewMode = 'edit' | 'preview' | 'pageview'
 
 export type Theme = 'light' | 'dark' | 'system'
 
-export type DefaultView = 'edit' | 'pageview' | 'last'
+export type DefaultView = 'edit' | 'pageview'
 
 export type AppPage = 'editor' | 'settings'
 

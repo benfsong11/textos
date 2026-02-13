@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ViewMode } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
-import SegmentedControl from './SegmentedControl'
 import type { TextAlign } from '../../../shared/types'
 import { SunIcon, MoonIcon, GearIcon, AlignLeftIcon, AlignCenterIcon, AlignRightIcon } from './icons'
 
@@ -10,13 +9,11 @@ interface ToolbarProps {
   viewMode: ViewMode
   isDirty: boolean
   recentFiles: string[]
-  fileType: 'txt' | 'md'
   onNewFile: () => void
   onOpen: () => void
   onOpenRecent: (filePath: string) => void
   onSave: () => void
   onSaveAs: () => void
-  onSetViewMode: (mode: ViewMode) => void
   onOpenSettings: () => void
 }
 
@@ -25,28 +22,17 @@ export default function Toolbar({
   viewMode,
   isDirty,
   recentFiles,
-  fileType,
   onNewFile,
   onOpen,
   onOpenRecent,
   onSave,
   onSaveAs,
-  onSetViewMode,
   onOpenSettings
 }: ToolbarProps): React.JSX.Element {
   const { resolvedTheme, settings, updateSettings } = useAppContext()
 
-  const viewOptions = useMemo(() => {
-    if (fileType === 'txt') {
-      return [
-        { value: 'edit' as const, label: '일반' },
-        { value: 'pageview' as const, label: '페이지' }
-      ]
-    }
-    return [{ value: 'edit' as const, label: '서식' }]
-  }, [fileType])
   const rawName = filePath ? filePath.split(/[/\\]/).pop() ?? null : null
-  const displayName = rawName ? rawName.replace(/\.[^.]+$/, '') : '빈 문서'
+  const displayName = rawName ?? '빈 문서'
   const [fileMenuOpen, setFileMenuOpen] = useState(false)
   const [activeSubmenu, setActiveSubmenu] = useState<'open' | null>(null)
   const fileMenuRef = useRef<HTMLDivElement>(null)
@@ -125,12 +111,6 @@ export default function Toolbar({
           </div>
         )}
       </div>
-
-      <SegmentedControl<ViewMode>
-        options={viewOptions}
-        value={viewMode}
-        onChange={onSetViewMode}
-      />
 
       {viewMode === 'pageview' && (
         <div className="toolbar-group">

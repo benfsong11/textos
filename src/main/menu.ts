@@ -64,10 +64,6 @@ export function buildMenu(): Menu {
     {
       label: '보기',
       submenu: [
-        { label: '편집 모드', accelerator: 'CmdOrCtrl+1', click: () => send('view-edit') },
-        { label: '미리보기', accelerator: 'CmdOrCtrl+2', click: () => send('view-preview') },
-        { label: '페이지 뷰', accelerator: 'CmdOrCtrl+3', click: () => send('view-pageview') },
-        { type: 'separator' },
         { role: 'toggleDevTools' },
         { label: '확대', accelerator: 'CmdOrCtrl+=', click: () => send('zoom-in') },
         { label: '축소', accelerator: 'CmdOrCtrl+-', click: () => send('zoom-out') },
