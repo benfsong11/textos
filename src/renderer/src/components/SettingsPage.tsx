@@ -12,8 +12,7 @@ const themeOptions = [
 
 const viewOptions = [
   { value: 'edit' as const, label: '일반' },
-  { value: 'pageview' as const, label: '페이지' },
-  { value: 'last' as const, label: '마지막 사용' }
+  { value: 'pageview' as const, label: '페이지' }
 ]
 
 const fileTypeOptions = [
