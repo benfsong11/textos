@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { createContext, useContext, useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react'
 import type { Theme, AppSettings, AppPage } from '../../../shared/types'
 
 interface AppContextValue {
@@ -61,8 +61,8 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   const resolvedTheme = resolveTheme(settings.theme, systemDark)
 
-  // Apply data-theme attribute to document
-  useEffect(() => {
+  // Apply data-theme attribute to document (useLayoutEffect to apply before paint)
+  useLayoutEffect(() => {
     document.documentElement.setAttribute('data-theme', resolvedTheme)
   }, [resolvedTheme])
 
