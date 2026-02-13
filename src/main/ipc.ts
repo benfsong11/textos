@@ -50,7 +50,7 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
     if (result.canceled || result.filePaths.length === 0) return null
 
     const filePath = result.filePaths[0]
-    const content = await readFile(filePath, 'utf-8')
+    const content = (await readFile(filePath, 'utf-8')).replace(/\r\n/g, '\n')
     return { content, filePath }
   })
 
@@ -58,7 +58,7 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
     'file:open-path',
     async (_event, filePath: string): Promise<FileData | null> => {
       try {
-        const content = await readFile(filePath, 'utf-8')
+        const content = (await readFile(filePath, 'utf-8')).replace(/\r\n/g, '\n')
         return { content, filePath }
       } catch {
         return null
