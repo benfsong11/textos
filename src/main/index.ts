@@ -77,43 +77,45 @@ if (!gotLock) {
   app.quit()
 } else {
   app.on('second-instance', (_event, argv) => {
-    const filePath = getFilePathFromArgs(argv)
-    if (filePath && mainWindow) {
-      mainWindow.webContents.send('file:open-from-argv', filePath)
+    if (mainWindow) {
+      const filePath = getFilePathFromArgs(argv)
+      if (filePath) {
+        mainWindow.webContents.send('file:open-from-argv', filePath)
+      }
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
   })
-}
 
-// macOS: file opened via Finder
-app.on('open-file', (event, path) => {
-  event.preventDefault()
-  if (mainWindow) {
-    mainWindow.webContents.send('file:open-from-argv', path)
-  } else {
-    pendingFilePath = path
-  }
-})
-
-app.whenReady().then(() => {
-  registerIpcHandlers(() => {
-    forceClose = true
-    mainWindow?.close()
-  })
-
-  Menu.setApplicationMenu(buildMenu())
-  createWindow()
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
+  // macOS: file opened via Finder
+  app.on('open-file', (event, path) => {
+    event.preventDefault()
+    if (mainWindow) {
+      mainWindow.webContents.send('file:open-from-argv', path)
+    } else {
+      pendingFilePath = path
     }
   })
-})
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+  app.whenReady().then(() => {
+    registerIpcHandlers(() => {
+      forceClose = true
+      mainWindow?.close()
+    })
+
+    Menu.setApplicationMenu(buildMenu())
+    createWindow()
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow()
+      }
+    })
+  })
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+}
