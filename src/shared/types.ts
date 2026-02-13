@@ -32,8 +32,8 @@ export interface FileData {
 export interface ElectronAPI {
   openFile: () => Promise<FileData | null>
   openFilePath: (filePath: string) => Promise<FileData | null>
-  saveFile: (content: string, filePath: string | null) => Promise<string | null>
-  saveFileAs: (content: string) => Promise<string | null>
+  saveFile: (content: string, filePath: string | null, fileType?: 'txt' | 'md') => Promise<string | null>
+  saveFileAs: (content: string, fileType?: 'txt' | 'md') => Promise<string | null>
   confirmClose: () => void
   onBeforeClose: (callback: () => void) => () => void
   onMenuAction: (callback: (action: string) => void) => () => void

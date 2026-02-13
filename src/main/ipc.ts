@@ -68,7 +68,7 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
 
   ipcMain.handle(
     'file:save',
-    async (_event, content: string, filePath: string | null): Promise<string | null> => {
+    async (_event, content: string, filePath: string | null, fileType?: 'txt' | 'md'): Promise<string | null> => {
       const win = BrowserWindow.getFocusedWindow()
       if (!win) return null
 
@@ -77,12 +77,19 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
         return filePath
       }
 
-      const result = await dialog.showSaveDialog(win, {
-        filters: [
-          { name: 'Text Files', extensions: ['txt', 'md', 'markdown'] },
-          { name: 'All Files', extensions: ['*'] }
-        ]
-      })
+      const filters = fileType === 'md'
+        ? [
+            { name: 'Markdown Files', extensions: ['md', 'markdown'] },
+            { name: 'Text Files', extensions: ['txt'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+        : [
+            { name: 'Text Files', extensions: ['txt'] },
+            { name: 'Markdown Files', extensions: ['md', 'markdown'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+
+      const result = await dialog.showSaveDialog(win, { filters })
 
       if (result.canceled || !result.filePath) return null
 
@@ -93,16 +100,23 @@ export function registerIpcHandlers(onCloseConfirmed: () => void): void {
 
   ipcMain.handle(
     'file:save-as',
-    async (_event, content: string): Promise<string | null> => {
+    async (_event, content: string, fileType?: 'txt' | 'md'): Promise<string | null> => {
       const win = BrowserWindow.getFocusedWindow()
       if (!win) return null
 
-      const result = await dialog.showSaveDialog(win, {
-        filters: [
-          { name: 'Text Files', extensions: ['txt', 'md', 'markdown'] },
-          { name: 'All Files', extensions: ['*'] }
-        ]
-      })
+      const filters = fileType === 'md'
+        ? [
+            { name: 'Markdown Files', extensions: ['md', 'markdown'] },
+            { name: 'Text Files', extensions: ['txt'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+        : [
+            { name: 'Text Files', extensions: ['txt'] },
+            { name: 'Markdown Files', extensions: ['md', 'markdown'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+
+      const result = await dialog.showSaveDialog(win, { filters })
 
       if (result.canceled || !result.filePath) return null
 
