@@ -932,3 +932,240 @@ body {
     transform: translateY(0) scale(1);
   }
 }
+
+/* ===== Title Bar ===== */
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  -webkit-app-region: drag;
+  flex-shrink: 0;
+  padding: 0 140px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+[data-platform="darwin"] .titlebar {
+  padding-left: max(140px, 80px);
+}
+
+/* ===== Title Bar Search ===== */
+
+.titlebar-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0 8px;
+  height: 26px;
+  width: 320px;
+  max-width: 100%;
+  -webkit-app-region: no-drag;
+  transition: border-color 0.15s ease;
+}
+
+.titlebar-search:focus-within {
+  border-color: var(--accent);
+}
+
+.titlebar-search-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.titlebar-search-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.titlebar-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  min-width: 0;
+}
+
+.titlebar-search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.titlebar-search-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.titlebar-search-count {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.titlebar-search-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.titlebar-search-nav-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.titlebar-search-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.titlebar-search-nav-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.titlebar-search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.titlebar-search-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.titlebar-search-close svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== Editor Wrapper (for highlight overlay) ===== */
+
+.editor-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.editor-wrapper .editor {
+  position: relative;
+  z-index: 1;
+}
+
+.editor-transparent {
+  background: transparent !important;
+}
+
+.highlight-backdrop-scroll {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.highlight-backdrop {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: transparent;
+  padding: 24px 32px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  tab-size: 4;
+}
+
+.search-highlight {
+  background: var(--accent-light);
+  border-bottom: 2px solid var(--accent);
+  color: transparent;
+  border-radius: 2px;
+}
+
+.search-highlight-active {
+  background: rgba(108, 92, 231, 0.25) !important;
+}
+
+[data-theme='dark'] .search-highlight-active {
+  background: rgba(139, 124, 246, 0.3) !important;
+}
+
+/* Preview mode search highlight */
+.preview .search-highlight,
+.mdview-preview .search-highlight {
+  color: inherit;
+}
+
+/* ===== PageView Editable Wrapper ===== */
+
+.pageview-editable-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageview-editable-wrapper .highlight-backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.pageview-editable-wrapper .pageview-editable {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== MarkdownView Editor Wrapper ===== */
+
+.mdview-editor-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mdview-editor-wrapper .highlight-backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.mdview-editor-wrapper .mdview-editor {
+  position: relative;
+  z-index: 1;
+}

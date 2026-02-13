@@ -1,5 +1,6 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { usePageBreaks } from '../hooks/usePageBreaks'
+import HighlightBackdrop from './HighlightBackdrop'
 
 interface PageViewProps {
   content: string
@@ -9,11 +10,14 @@ interface PageViewProps {
   textAlign: 'left' | 'center' | 'right'
   letterSpacing: number
   lineHeight: number
+  searchQuery?: string
+  activeMatchIndex?: number
 }
 
-export default function PageView({ content, onChange, fontFamily, fontSize, textAlign, letterSpacing, lineHeight }: PageViewProps): React.JSX.Element {
+export default function PageView({ content, onChange, fontFamily, fontSize, textAlign, letterSpacing, lineHeight, searchQuery, activeMatchIndex }: PageViewProps): React.JSX.Element {
   const pages = usePageBreaks(content, { fontSize, lineHeight })
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([])
   const cursorRef = useRef<{ absolutePos: number; pageIndex: number } | null>(null)
 
   // Compute the absolute offset where a given page starts
@@ -27,6 +31,34 @@ export default function PageView({ content, onChange, fontFamily, fontSize, text
     },
     [pages]
   )
+
+  // Compute matches per page and map global activeMatchIndex to (page, localIndex)
+  const activeMatchMapping = useMemo(() => {
+    if (activeMatchIndex === undefined || activeMatchIndex < 0 || !searchQuery) {
+      return null
+    }
+    const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    let globalIdx = 0
+    for (let p = 0; p < pages.length; p++) {
+      const regex = new RegExp(escaped, 'gi')
+      const matches = pages[p].match(regex)
+      const count = matches ? matches.length : 0
+      if (globalIdx + count > activeMatchIndex) {
+        return { pageIndex: p, localIndex: activeMatchIndex - globalIdx }
+      }
+      globalIdx += count
+    }
+    return null
+  }, [activeMatchIndex, searchQuery, pages])
+
+  // Scroll to the page containing the active match
+  useEffect(() => {
+    if (!activeMatchMapping) return
+    const pageEl = pageRefs.current[activeMatchMapping.pageIndex]
+    if (pageEl) {
+      pageEl.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    }
+  }, [activeMatchMapping])
 
   // After content changes and re-pagination, restore cursor
   useEffect(() => {
@@ -161,21 +193,33 @@ export default function PageView({ content, onChange, fontFamily, fontSize, text
     }
   }
 
+  const pageTextStyle: React.CSSProperties = { fontFamily, fontSize: `${fontSize}pt`, textAlign, letterSpacing: `${letterSpacing}px`, lineHeight }
+
   return (
     <div className="pageview-container">
       {pages.map((page, i) => (
-        <div key={i} className="pageview-page">
-          <textarea
-            ref={(el) => {
-              textareaRefs.current[i] = el
-            }}
-            className="pageview-content pageview-editable"
-            value={page}
-            onChange={(e) => handleChange(i, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(i, e)}
-            spellCheck={false}
-            style={{ fontFamily, fontSize: `${fontSize}pt`, textAlign, letterSpacing: `${letterSpacing}px`, lineHeight }}
-          />
+        <div key={i} className="pageview-page" ref={(el) => { pageRefs.current[i] = el }}>
+          <div className="pageview-editable-wrapper">
+            {searchQuery && (
+              <HighlightBackdrop
+                content={page}
+                searchQuery={searchQuery}
+                activeMatchIndex={activeMatchMapping?.pageIndex === i ? activeMatchMapping.localIndex : -1}
+                style={pageTextStyle}
+              />
+            )}
+            <textarea
+              ref={(el) => {
+                textareaRefs.current[i] = el
+              }}
+              className={`pageview-content pageview-editable${searchQuery ? ' editor-transparent' : ''}`}
+              value={page}
+              onChange={(e) => handleChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              spellCheck={false}
+              style={pageTextStyle}
+            />
+          </div>
           <span className="pageview-page-number">{i + 1}</span>
         </div>
       ))}

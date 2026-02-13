@@ -56,7 +56,9 @@ export function buildMenu(): Menu {
         { role: 'copy' },
         { role: 'paste' },
         ...(isMac ? [{ role: 'pasteAndMatchStyle' as const }] : []),
-        { role: 'selectAll' }
+        { role: 'selectAll' },
+        { type: 'separator' },
+        { label: '찾기', accelerator: 'CmdOrCtrl+F', click: () => send('find') }
       ]
     },
     {

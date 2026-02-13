@@ -12,6 +12,7 @@ interface MenuHandlers {
   onZoomIn: () => void
   onZoomOut: () => void
   onZoomReset: () => void
+  onFind: () => void
 }
 
 export function useMenuActions(handlers: MenuHandlers): void {
@@ -50,6 +51,9 @@ export function useMenuActions(handlers: MenuHandlers): void {
           break
         case 'zoom-reset':
           handlers.onZoomReset()
+          break
+        case 'find':
+          handlers.onFind()
           break
       }
     })
