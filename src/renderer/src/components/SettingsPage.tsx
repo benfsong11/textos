@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { Theme, DefaultView, CharCountRule } from '../../../shared/types'
+import type { Theme, DefaultView, DefaultFileType, CharCountRule } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import SegmentedControl from './SegmentedControl'
 import { CloseIcon } from './icons'
@@ -13,6 +13,12 @@ const themeOptions = [
 const viewOptions = [
   { value: 'edit' as const, label: '일반' },
   { value: 'pageview' as const, label: '페이지' },
+  { value: 'last' as const, label: '마지막 사용' }
+]
+
+const fileTypeOptions = [
+  { value: 'txt' as const, label: '문서' },
+  { value: 'md' as const, label: '서식 문서' },
   { value: 'last' as const, label: '마지막 사용' }
 ]
 
@@ -74,8 +80,19 @@ export default function SettingsPage({ onClose }: SettingsPageProps): React.JSX.
             <div className="settings-card">
               <div className="settings-row">
                 <div>
+                  <div className="settings-row-label">새 문서 형식</div>
+                  <div className="settings-row-description">새로 만들기 시 기본 문서 형식</div>
+                </div>
+                <SegmentedControl<DefaultFileType>
+                  options={fileTypeOptions}
+                  value={settings.defaultFileType}
+                  onChange={(defaultFileType) => updateSettings({ defaultFileType })}
+                />
+              </div>
+              <div className="settings-row">
+                <div>
                   <div className="settings-row-label">기본 보기</div>
-                  <div className="settings-row-description">새 파일을 열 때 기본 보기 모드</div>
+                  <div className="settings-row-description">새 문서를 열 때 기본 보기 모드</div>
                 </div>
                 <SegmentedControl<DefaultView>
                   options={viewOptions}
