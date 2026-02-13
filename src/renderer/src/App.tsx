@@ -261,16 +261,11 @@ export default function App(): React.JSX.Element {
   return (
     <div className="app">
       <TitleBar
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
-        matchInfo={searchQuery ? { current: currentMatchIndex, total: matchCount } : null}
-        onPrevMatch={handlePrevMatch}
-        onNextMatch={handleNextMatch}
+        filePath={filePath}
+        isDirty={isDirty}
       />
       <Toolbar
-        filePath={filePath}
         viewMode={viewMode}
-        isDirty={isDirty}
         recentFiles={recentFiles}
         onNewFile={handleNewFile}
         onOpen={handleOpenFile}
@@ -278,6 +273,11 @@ export default function App(): React.JSX.Element {
         onSave={() => saveFile(fileTypeRef.current)}
         onSaveAs={() => saveFileAs(fileTypeRef.current)}
         onOpenSettings={handleOpenSettings}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        matchInfo={searchQuery ? { current: currentMatchIndex, total: matchCount } : null}
+        onPrevMatch={handlePrevMatch}
+        onNextMatch={handleNextMatch}
       />
       <div className="editor-container" style={{ zoom: contentZoom }}>
         {fileReady && (
