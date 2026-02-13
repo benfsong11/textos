@@ -123,26 +123,28 @@ export default function Toolbar({
         )}
       </div>
 
-      <div className="toolbar-group">
-        {(['left', 'center', 'right'] as TextAlign[]).map((align) => (
-          <button
-            key={align}
-            className={`toolbar-icon-btn${settings.textAlign === align ? ' active' : ''}`}
-            onClick={() => updateSettings({ textAlign: align })}
-            title={align === 'left' ? '왼쪽 정렬' : align === 'center' ? '가운데 정렬' : '오른쪽 정렬'}
-          >
-            {align === 'left' && <AlignLeftIcon />}
-            {align === 'center' && <AlignCenterIcon />}
-            {align === 'right' && <AlignRightIcon />}
-          </button>
-        ))}
-      </div>
-
       <SegmentedControl<ViewMode>
         options={viewOptions}
         value={viewMode}
         onChange={onSetViewMode}
       />
+
+      {viewMode === 'pageview' && (
+        <div className="toolbar-group">
+          {(['left', 'center', 'right'] as TextAlign[]).map((align) => (
+            <button
+              key={align}
+              className={`toolbar-icon-btn${settings.textAlign === align ? ' active' : ''}`}
+              onClick={() => updateSettings({ textAlign: align })}
+              title={align === 'left' ? '왼쪽 정렬' : align === 'center' ? '가운데 정렬' : '오른쪽 정렬'}
+            >
+              {align === 'left' && <AlignLeftIcon />}
+              {align === 'center' && <AlignCenterIcon />}
+              {align === 'right' && <AlignRightIcon />}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="toolbar-spacer" />
 
