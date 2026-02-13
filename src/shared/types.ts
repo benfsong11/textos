@@ -10,9 +10,12 @@ export type CharCountRule = 'with-spaces' | 'without-spaces'
 
 export type TextAlign = 'left' | 'center' | 'right'
 
+export type DefaultFileType = 'txt' | 'md' | 'last'
+
 export interface AppSettings {
   theme: Theme
   defaultView: DefaultView
+  defaultFileType: DefaultFileType
   fontFamily: string
   fontSize: number
   charCountRule: CharCountRule

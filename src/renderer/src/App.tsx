@@ -14,7 +14,8 @@ import type { ModalAction } from './components/Modal'
 
 type PendingAction = 'new-file' | 'open-file' | 'close-app' | null
 type PendingOpenRecent = string | null
-type NewFilePrompt = boolean
+
+const LAST_FILE_TYPE_KEY = 'textos-last-file-type'
 
 export default function App(): React.JSX.Element {
   const { settings, currentPage, setCurrentPage } = useAppContext()
@@ -30,11 +31,19 @@ export default function App(): React.JSX.Element {
     setViewModeRaw(mode)
     localStorage.setItem('textos-last-view', mode)
   }, [])
-  const [fileType, setFileType] = useState<'txt' | 'md'>('md')
+  const [fileType, setFileTypeRaw] = useState<'txt' | 'md'>(() => {
+    if (settings.defaultFileType === 'last') {
+      return (localStorage.getItem(LAST_FILE_TYPE_KEY) as 'txt' | 'md') || 'txt'
+    }
+    return settings.defaultFileType
+  })
+  const setFileType = useCallback((ext: 'txt' | 'md') => {
+    setFileTypeRaw(ext)
+    localStorage.setItem(LAST_FILE_TYPE_KEY, ext)
+  }, [])
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
   const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
-  const [showNewFilePrompt, setShowNewFilePrompt] = useState<NewFilePrompt>(true)
-  const [fileReady, setFileReady] = useState(false)
+  const [fileReady, setFileReady] = useState(true)
   const [contentZoom, setContentZoom] = useState(1.0)
 
   // Keep refs for latest values accessible in callbacks
@@ -53,7 +62,6 @@ export default function App(): React.JSX.Element {
         setViewMode(ext === 'txt' ? 'pageview' : 'edit')
       }
       setFileReady(true)
-      setShowNewFilePrompt(false)
     }
   }, [filePath])
 
@@ -69,19 +77,19 @@ export default function App(): React.JSX.Element {
     []
   )
 
-  const handleNewFile = useCallback(() => {
-    guardDirty('new-file', () => {
-      setShowNewFilePrompt(true)
-    })
-  }, [guardDirty])
-
-  const handleNewFileSelect = useCallback((ext: 'txt' | 'md') => {
-    setShowNewFilePrompt(false)
+  const createNewFile = useCallback(() => {
+    const ext = settings.defaultFileType === 'last'
+      ? (localStorage.getItem(LAST_FILE_TYPE_KEY) as 'txt' | 'md') || 'txt'
+      : settings.defaultFileType
     setFileReady(true)
     newFile()
     setFileType(ext)
     setViewMode(ext === 'txt' ? 'pageview' : 'edit')
-  }, [newFile])
+  }, [newFile, settings.defaultFileType, setFileType, setViewMode])
+
+  const handleNewFile = useCallback(() => {
+    guardDirty('new-file', createNewFile)
+  }, [guardDirty, createNewFile])
 
   const handleOpenFile = useCallback(() => {
     guardDirty('open-file', openFile)
@@ -107,7 +115,7 @@ export default function App(): React.JSX.Element {
     setPendingAction(null)
     setPendingOpenRecent(null)
     if (action === 'new-file') {
-      setShowNewFilePrompt(true)
+      createNewFile()
     } else if (action === 'open-file') {
       if (recentPath) {
         await openFilePath(recentPath)
@@ -117,7 +125,7 @@ export default function App(): React.JSX.Element {
     } else if (action === 'close-app') {
       window.api.confirmClose()
     }
-  }, [pendingAction, pendingOpenRecent, newFile, openFile, openFilePath])
+  }, [pendingAction, pendingOpenRecent, createNewFile, openFile, openFilePath])
 
   const handleSaveAndContinue = useCallback(async () => {
     await saveFile()
@@ -233,31 +241,6 @@ export default function App(): React.JSX.Element {
       <StatusBar content={content} zoom={contentZoom} />
 
       {currentPage === 'settings' && <SettingsPage onClose={handleCloseSettings} />}
-
-      {showNewFilePrompt && (
-        <Modal
-          title="새로 만들기"
-          message="어떤 형식의 문서를 만드시겠습니까?"
-          actions={[
-            { label: '빈 문서 (.txt)', variant: 'primary', onClick: () => handleNewFileSelect('txt') },
-            { label: '빈 서식 문서 (.md)', variant: 'primary', onClick: () => handleNewFileSelect('md') },
-            { label: '취소', variant: 'secondary', onClick: () => {
-              if (!fileReady) {
-                window.api.confirmClose()
-              } else {
-                setShowNewFilePrompt(false)
-              }
-            }}
-          ]}
-          onClose={() => {
-            if (!fileReady) {
-              window.api.confirmClose()
-            } else {
-              setShowNewFilePrompt(false)
-            }
-          }}
-        />
-      )}
 
       {pendingAction && (
         <Modal
