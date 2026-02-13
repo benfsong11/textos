@@ -26,8 +26,8 @@ interface UseFileReturn {
   setContent: (content: string) => void
   openFile: () => Promise<void>
   openFilePath: (path: string) => Promise<void>
-  saveFile: () => Promise<void>
-  saveFileAs: () => Promise<void>
+  saveFile: (fileType?: 'txt' | 'md') => Promise<void>
+  saveFileAs: (fileType?: 'txt' | 'md') => Promise<void>
   newFile: () => void
 }
 
@@ -68,8 +68,8 @@ export function useFile(): UseFileReturn {
     }
   }, [addRecentFile])
 
-  const saveFile = useCallback(async () => {
-    const savedPath = await window.api.saveFile(content, filePath)
+  const saveFile = useCallback(async (fileType?: 'txt' | 'md') => {
+    const savedPath = await window.api.saveFile(content, filePath, fileType)
     if (savedPath) {
       setFilePath(savedPath)
       lastSavedContent.current = content
@@ -77,8 +77,8 @@ export function useFile(): UseFileReturn {
     }
   }, [content, filePath, addRecentFile])
 
-  const saveFileAs = useCallback(async () => {
-    const savedPath = await window.api.saveFileAs(content)
+  const saveFileAs = useCallback(async (fileType?: 'txt' | 'md') => {
+    const savedPath = await window.api.saveFileAs(content, fileType)
     if (savedPath) {
       setFilePath(savedPath)
       lastSavedContent.current = content

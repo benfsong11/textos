@@ -140,7 +140,7 @@ export default function App(): React.JSX.Element {
   }, [pendingAction, pendingOpenRecent, createNewFile, openFile, openFilePath])
 
   const handleSaveAndContinue = useCallback(async () => {
-    await saveFile()
+    await saveFile(fileTypeRef.current)
     await executePendingAction()
   }, [saveFile, executePendingAction])
 
@@ -242,8 +242,8 @@ export default function App(): React.JSX.Element {
   useMenuActions({
     onNewFile: handleNewFile,
     onOpenFile: handleOpenFile,
-    onSaveFile: saveFile,
-    onSaveFileAs: saveFileAs,
+    onSaveFile: () => saveFile(fileTypeRef.current),
+    onSaveFileAs: () => saveFileAs(fileTypeRef.current),
     onOpenSettings: handleOpenSettings,
     onViewEdit: () => setViewMode('edit'),
     onViewPreview: () => { if (fileTypeRef.current === 'md') setViewMode('preview') },
@@ -285,8 +285,8 @@ export default function App(): React.JSX.Element {
         onNewFile={handleNewFile}
         onOpen={handleOpenFile}
         onOpenRecent={handleOpenRecent}
-        onSave={saveFile}
-        onSaveAs={saveFileAs}
+        onSave={() => saveFile(fileTypeRef.current)}
+        onSaveAs={() => saveFileAs(fileTypeRef.current)}
         onSetViewMode={setViewMode}
         onOpenSettings={handleOpenSettings}
       />

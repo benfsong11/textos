@@ -4,8 +4,8 @@ import type { ElectronAPI } from '../shared/types'
 const api: ElectronAPI = {
   openFile: () => ipcRenderer.invoke('file:open'),
   openFilePath: (filePath) => ipcRenderer.invoke('file:open-path', filePath),
-  saveFile: (content, filePath) => ipcRenderer.invoke('file:save', content, filePath),
-  saveFileAs: (content) => ipcRenderer.invoke('file:save-as', content),
+  saveFile: (content, filePath, fileType) => ipcRenderer.invoke('file:save', content, filePath, fileType),
+  saveFileAs: (content, fileType) => ipcRenderer.invoke('file:save-as', content, fileType),
   getSystemFonts: () => ipcRenderer.invoke('font:list'),
   getZoomFactor: () => webFrame.getZoomFactor(),
   setZoomFactor: (f) => webFrame.setZoomFactor(f),
