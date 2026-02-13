@@ -357,8 +357,10 @@ body {
   min-width: 160px;
 }
 
-.toolbar-dropdown-item {
-  display: block;
+.toolbar .toolbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
   padding: 8px 12px;
   background: transparent;
@@ -378,9 +380,21 @@ body {
   background: var(--bg-tertiary);
 }
 
+.toolbar-dropdown-shortcut {
+  margin-left: auto;
+  padding-left: 24px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .toolbar-dropdown-item-arrow {
   position: relative;
   padding-right: 24px !important;
+}
+
+.toolbar-dropdown-item-arrow .toolbar-dropdown-shortcut {
+  padding-right: 8px;
 }
 
 .toolbar-dropdown-item-arrow::after {
