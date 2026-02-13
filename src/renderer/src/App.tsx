@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import type { ViewMode } from '../../shared/types'
 import { useAppContext } from './context/AppContext'
 import { useFile } from './hooks/useFile'
 import { useMenuActions } from './hooks/useMenuActions'
+import TitleBar from './components/TitleBar'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
 import PageView from './components/PageView'
@@ -45,6 +46,8 @@ export default function App(): React.JSX.Element {
   const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
   const [fileReady, setFileReady] = useState(true)
   const [contentZoom, setContentZoom] = useState(1.0)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(-1)
 
   // Keep refs for latest values accessible in callbacks
   const isDirtyRef = useRef(isDirty)
@@ -157,6 +160,47 @@ export default function App(): React.JSX.Element {
     }
   }, [])
 
+  // Search: compute match count
+  const matchCount = useMemo(() => {
+    if (!searchQuery) return 0
+    const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const matches = content.match(new RegExp(escaped, 'gi'))
+    return matches ? matches.length : 0
+  }, [content, searchQuery])
+
+  // Reset match index when query changes
+  useEffect(() => {
+    if (!searchQuery || matchCount === 0) {
+      setCurrentMatchIndex(-1)
+    } else {
+      setCurrentMatchIndex(0)
+    }
+  }, [searchQuery])
+
+  // Clamp match index when content changes while searching
+  useEffect(() => {
+    setCurrentMatchIndex(prev => {
+      if (matchCount === 0) return -1
+      if (prev >= matchCount) return matchCount - 1
+      if (prev < 0) return 0
+      return prev
+    })
+  }, [matchCount])
+
+  const handleNextMatch = useCallback(() => {
+    if (matchCount === 0) return
+    setCurrentMatchIndex(prev => (prev + 1) % matchCount)
+  }, [matchCount])
+
+  const handlePrevMatch = useCallback(() => {
+    if (matchCount === 0) return
+    setCurrentMatchIndex(prev => (prev - 1 + matchCount) % matchCount)
+  }, [matchCount])
+
+  const handleSearchFocus = useCallback(() => {
+    // Triggered by menu 'find' action — just focus the input (handled by TitleBar's Ctrl+F)
+  }, [])
+
   const applyZoom = useCallback((delta: number) => {
     const current = contentZoomRef.current
     const next = Math.min(3.0, Math.max(0.5, Math.round((current + delta) * 10) / 10))
@@ -206,7 +250,8 @@ export default function App(): React.JSX.Element {
     onViewPageview: () => { if (fileTypeRef.current === 'txt') setViewMode('pageview') },
     onZoomIn: () => applyZoom(0.1),
     onZoomOut: () => applyZoom(-0.1),
-    onZoomReset: () => setContentZoom(1.0)
+    onZoomReset: () => setContentZoom(1.0),
+    onFind: handleSearchFocus
   })
 
   const modalActions: ModalAction[] = [
@@ -219,8 +264,18 @@ export default function App(): React.JSX.Element {
     setCurrentPage('editor')
   }, [setCurrentPage])
 
+  const activeSearchQuery = searchQuery || undefined
+  const activeMatchIdx = searchQuery && currentMatchIndex >= 0 ? currentMatchIndex : undefined
+
   return (
     <div className="app">
+      <TitleBar
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        matchInfo={searchQuery ? { current: currentMatchIndex, total: matchCount } : null}
+        onPrevMatch={handlePrevMatch}
+        onNextMatch={handleNextMatch}
+      />
       <Toolbar
         filePath={filePath}
         viewMode={viewMode}
@@ -238,16 +293,16 @@ export default function App(): React.JSX.Element {
       <div className="editor-container" style={{ zoom: contentZoom }}>
         {fileReady && (
           fileType === 'md' ? (
-            <MarkdownView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />
+            <MarkdownView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} searchQuery={activeSearchQuery} activeMatchIndex={activeMatchIdx} />
           ) : (
             <>
-              {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} />}
-              {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} />}
+              {viewMode === 'edit' && <Editor content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} searchQuery={activeSearchQuery} activeMatchIndex={activeMatchIdx} />}
+              {viewMode === 'pageview' && <PageView content={content} onChange={setContent} fontFamily={settings.fontFamily} fontSize={settings.fontSize} textAlign={settings.textAlign} letterSpacing={settings.letterSpacing} lineHeight={settings.lineHeight} searchQuery={activeSearchQuery} activeMatchIndex={activeMatchIdx} />}
             </>
           )
         )}
       </div>
-      <StatusBar content={content} zoom={contentZoom} />
+      <StatusBar content={content} zoom={contentZoom} searchMatchCount={searchQuery ? matchCount : undefined} />
 
       {currentPage === 'settings' && <SettingsPage onClose={handleCloseSettings} />}
 

@@ -32,10 +32,12 @@ function createWindow(): void {
     minWidth: 600,
     minHeight: 400,
     show: false,
-    title: 'Textos',
+    title: '',
     autoHideMenuBar: !isMac,
     icon: join(app.getAppPath(), 'resources', isMac ? 'app.png' : 'app.ico'),
-    ...(isMac ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 16, y: 12 } } : {}),
+    ...(isMac
+      ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 16, y: 10 } }
+      : { titleBarStyle: 'hidden', titleBarOverlay: { color: '#00000000', symbolColor: '#8b8fa3', height: 36 } }),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
