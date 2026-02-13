@@ -92,7 +92,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps): React.JSX.
               <div className="settings-row">
                 <div>
                   <div className="settings-row-label">기본 보기</div>
-                  <div className="settings-row-description">새 파일을 열 때 기본 보기 모드</div>
+                  <div className="settings-row-description">새 문서를 열 때 기본 보기 모드</div>
                 </div>
                 <SegmentedControl<DefaultView>
                   options={viewOptions}

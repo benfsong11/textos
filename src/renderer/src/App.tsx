@@ -54,12 +54,21 @@ export default function App(): React.JSX.Element {
   const contentZoomRef = useRef(contentZoom)
   contentZoomRef.current = contentZoom
 
+  const resolveViewMode = useCallback((ext: 'txt' | 'md'): ViewMode => {
+    if (ext === 'md') return 'edit'
+    if (settings.defaultView === 'last') {
+      const last = localStorage.getItem('textos-last-view') as ViewMode | null
+      return (last === 'edit' || last === 'pageview') ? last : 'pageview'
+    }
+    return settings.defaultView
+  }, [settings.defaultView])
+
   useEffect(() => {
     if (filePath) {
       const ext = filePath.toLowerCase().endsWith('.txt') ? 'txt' as const : 'md' as const
       if (ext !== fileTypeRef.current) {
         setFileType(ext)
-        setViewMode(ext === 'txt' ? 'pageview' : 'edit')
+        setViewMode(resolveViewMode(ext))
       }
       setFileReady(true)
     }
@@ -84,8 +93,8 @@ export default function App(): React.JSX.Element {
     setFileReady(true)
     newFile()
     setFileType(ext)
-    setViewMode(ext === 'txt' ? 'pageview' : 'edit')
-  }, [newFile, settings.defaultFileType, setFileType, setViewMode])
+    setViewMode(resolveViewMode(ext))
+  }, [newFile, settings.defaultFileType, setFileType, setViewMode, resolveViewMode])
 
   const handleNewFile = useCallback(() => {
     guardDirty('new-file', createNewFile)
