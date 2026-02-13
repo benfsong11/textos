@@ -20,7 +20,16 @@ export default function App(): React.JSX.Element {
   const { settings, currentPage, setCurrentPage } = useAppContext()
   const { content, filePath, isDirty, recentFiles, setContent, openFile, openFilePath, saveFile, saveFileAs, newFile } =
     useFile()
-  const [viewMode, setViewMode] = useState<ViewMode>(settings.defaultView)
+  const [viewMode, setViewModeRaw] = useState<ViewMode>(() => {
+    if (settings.defaultView === 'last') {
+      return (localStorage.getItem('textos-last-view') as ViewMode) || 'edit'
+    }
+    return settings.defaultView
+  })
+  const setViewMode = useCallback((mode: ViewMode) => {
+    setViewModeRaw(mode)
+    localStorage.setItem('textos-last-view', mode)
+  }, [])
   const [fileType, setFileType] = useState<'txt' | 'md'>('md')
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
   const [pendingOpenRecent, setPendingOpenRecent] = useState<PendingOpenRecent>(null)
